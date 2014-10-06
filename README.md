@@ -160,6 +160,8 @@ DEVICE SUPPORT
 
 	3com-msr	3Com MSR routers
 
+	mikrotik	MikroTik routers
+
 
 OPTIONS
 =======
@@ -303,6 +305,20 @@ OPTIONS
 	timezone	Optional.
 
 	The 3com-msr module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	enable		Mandatory.
+	timeout		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
+	timezone	Optional.
+
+	The mikrotik module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
 
 	user		Mandatory.

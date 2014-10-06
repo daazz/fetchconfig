@@ -1,5 +1,5 @@
 # fetchconfig - Retrieving configuration for multiple devices
-# Copyright (C) 2006 Everton da Silva Marques
+# Copyright (C) 2010 Everton da Silva Marques
 #
 # fetchconfig is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,23 +16,23 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: CiscoIOS.pm,v 1.8 2010/12/02 19:38:29 evertonm Exp $
+# $Id: MikroTik.pm,v 1.2 2010/12/02 19:50:37 evertonm Exp $
 
-package fetchconfig::model::CiscoIOS; # fetchconfig/model/CiscoIOS.pm
+package fetchconfig::model::MikroTik; # fetchconfig/model/MikroTik.pm
 
 use strict;
 use warnings;
 use Net::Telnet;
 use fetchconfig::model::Abstract;
 
-@fetchconfig::model::CiscoIOS::ISA = qw(fetchconfig::model::Abstract);
+@fetchconfig::model::MikroTik::ISA = qw(fetchconfig::model::Abstract);
 
 ####################################
 # Implement model::Abstract - Begin
 #
 
 sub label {
-    'cisco-ios';
+    'mikrotik';
 }
 
 # "sub new" fully inherited from fetchconfig::model::Abstract
@@ -59,7 +59,7 @@ sub chat_login {
     my ($self, $t, $dev_id, $dev_host, $dev_opt_tab) = @_;
     my $ok;
 
-    my $login_prompt = '/(Username:|Password:) $/';
+    my $login_prompt = '/Login: $/';
 
     # chat_banner is used to allow temporary modification
     # of timeout throught the 'banner_timeout' option
@@ -72,96 +72,61 @@ sub chat_login {
 
     $self->log_debug("found login prompt: [$match]");
 
-    if ($match =~ /^Username/) {
-	my $dev_user = $self->dev_option($dev_opt_tab, "user");
-	if (!defined($dev_user)) {
-	    $self->log_error("login username needed but not provided");
-	    return undef;
-	}
-
-	$ok = $t->print($dev_user);
-	if (!$ok) {
-	    $self->log_error("could not send login username");
-	    return undef;
-	}
-
-	($prematch, $match) = $t->waitfor(Match => '/Password: $/');
-	if (!defined($prematch)) {
-	    $self->log_error("could not find password prompt");
-	    return undef;
-	}
-
-	$self->log_debug("found password prompt: [$match]");
-    }
-
-    if ($match =~ /^Password/) {
-	my $dev_pass = $self->dev_option($dev_opt_tab, "pass");
-        if (!defined($dev_pass)) {
-	    $self->log_error("login password needed but not provided");
-	    return undef;
-        }
-
-	$ok = $t->print($dev_pass);
-	if (!$ok) {
-	    $self->log_error("could not send login password");
-	    return undef;
-	}
-
-        ($prematch, $match) = $t->waitfor(Match => '/(\S+)[>#]$/');
-	if (!defined($prematch)) {
-	    $self->log_error("could not find command prompt");
-	    return undef;
-	}
-
-	$self->log_debug("found command prompt: [$match]");
-    }
-
-    if ($match =~ /^\S+>$/) {
-        $ok = $t->print('enable');
-	if (!$ok) {
-	    $self->log_error("could not send enable command");
-	    return undef;
-	}
-	
-        ($prematch, $match) = $t->waitfor(Match => '/(Password: |\S+#)$/');
-	if (!defined($prematch)) {
-	    $self->log_error("could not find enable password prompt");
-	    return undef;
-	}
-
-        if ($match =~ /^Password/) {
-	    my $dev_enable = $self->dev_option($dev_opt_tab, "enable");
-	    if (!defined($dev_enable)) {
-		$self->log_error("enable password needed but not provided");
-		return undef;
-	    }
-
-	    $ok = $t->print($dev_enable);
-	    if (!$ok) {
-		$self->log_error("could not send enable password");
-		return undef;
-	    }
-
-	    ($prematch, $match) = $t->waitfor(Match => '/\S+#$/');
-	    if (!defined($prematch)) {
-		$self->log_error("could not find enable command prompt");
-		return undef;
-	    }
-        }
-
-	$self->log_debug("found enable prompt: [$match]");
-    }
-
-    if ($match !~ /^(\S+)\#$/) {
-	$self->log_error("could not match enable command prompt");
+    my $dev_user = $self->dev_option($dev_opt_tab, "user");
+    if (!defined($dev_user)) {
+	$self->log_error("login username needed but not provided");
 	return undef;
     }
 
-    my $prompt = $1;
+    # Append +ct console login options to username:
+    # c: disable console colors
+    # t: Do auto detection of terminal capabilities
+    #
+    # Source:
+    # http://wiki.mikrotik.com/wiki/Console_login_process#Console_login_options
+    #
+    my $user = "$dev_user+ct";
+    $self->log_debug("sending user='$user'");
+
+    $ok = $t->print($user);
+    if (!$ok) {
+	$self->log_error("could not send login username: '$user'");
+	return undef;
+    }
+
+    ($prematch, $match) = $t->waitfor(Match => '/Password: $/');
+    if (!defined($prematch)) {
+	$self->log_error("could not find password prompt");
+	return undef;
+    }
+
+    $self->log_debug("found password prompt: [$match]");
+
+    my $dev_pass = $self->dev_option($dev_opt_tab, "pass");
+    if (!defined($dev_pass)) {
+	$self->log_error("login password needed but not provided");
+	return undef;
+    }
+
+    #$self->log_debug("sending password: '$dev_pass'");
+
+    $ok = $t->print($dev_pass);
+    if (!$ok) {
+	$self->log_error("could not send login password");
+	return undef;
+    }
+
+    ($prematch, $match) = $t->waitfor(Match => '/(\S+) > $/');
+    if (!defined($prematch)) {
+	$self->log_error("could not find command prompt");
+	return undef;
+    }
+
+    my $prompt = $match;
+
+    $self->log_debug("logged in prompt='$prompt'");
 
     $self->{prompt} = $prompt; # save prompt
-
-    $self->log_debug("logged in prompt=[$prompt]");
 
     $prompt;
 }
@@ -174,7 +139,7 @@ sub expect_enable_prompt {
 	return undef;
     }
 
-    my $enable_prompt_regexp = '/' . $prompt . '#$/';
+    my $enable_prompt_regexp = '/' . $prompt . ' > $/';
 
     my ($prematch, $match) = $t->waitfor(Match => $enable_prompt_regexp);
     if (!defined($prematch)) {
@@ -184,49 +149,71 @@ sub expect_enable_prompt {
     ($prematch, $match);
 }
 
+sub escape_brackets {
+    my ($str) = @_;
+
+    $str =~ s/\@/\\\@/g;
+    $str =~ s/\[/\\\[/g;
+    $str =~ s/\]/\\\]/g;
+
+    $str;
+}
+
+sub expect_enable_prompt_paging {
+    my ($self, $t, $prompt, $paging_prompt) = @_;
+
+    if (!defined($prompt)) {
+	$self->log_error("internal failure: undefined command prompt");
+	return undef;
+    }
+
+    my $escaped_prompt = &escape_brackets($prompt);
+    $self->log_debug("regexp='$prompt' escaped_brackets='$escaped_prompt'");
+
+    my $prompt_regexp = '/(' . $escaped_prompt . ')|(' . $paging_prompt . ')/';
+    my $paging_prompt_regexp = '/' . $paging_prompt . '/';
+
+    my ($prematch, $match, $full_prematch);
+
+    for (;;) {
+	($prematch, $match) = $t->waitfor(Match => $prompt_regexp);
+	if (!defined($prematch)) {
+	    $self->log_error("could not match enable/paging prompt: $prompt_regexp");
+	    return; # signals error with undef
+	}
+
+	#$self->log_debug("paging match: [$match]");
+
+	$full_prematch .= $prematch;
+
+	if ($match ne $paging_prompt) {
+	    #$self->log_debug("done paging match: [$match][$paging_prompt_regexp]");
+	    last;
+	}
+
+	# Do paging
+	my $ok = $t->put(' '); # SPACE
+	if (!$ok) {
+	    $self->log_error("could not send paging SPACE command");
+	    return; # signals error with undef
+	}
+    }
+
+    ($full_prematch, $match);
+}
+
 sub chat_fetch {
     my ($self, $t, $dev_id, $dev_host, $prompt, $fetch_timeout, $show_cmd, $conf_ref) = @_;
-    my $ok;
+    my ($ok, $prematch, $match);
     
-    $ok = $t->print('term len 0');
-    if (!$ok) {
-	$self->log_error("could not send pager disabling command");
+    #$t->input_log(\*STDERR);
+
+    if ($self->chat_show_conf($t, 'export', $show_cmd)) {
 	return 1;
     }
 
-    my ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
-    return unless defined($prematch);
-
-    # Backward compatibility support for option "show_cmd=wrterm"
-    my $custom_cmd;
-    if (defined($show_cmd)) {
-	$custom_cmd = ($show_cmd eq 'wrterm') ? 'write term' : $show_cmd;
-    }
-
-    if ($self->chat_show_conf($t, 'show run', $custom_cmd)) {
-	return 1;
-    }
-
-	# Prevent "show run" command from appearing in config dump
-	$t->getline();
-
-	# Commment out garbage at top so config file can be restored
-	# cleanly at a later date
-	my($line,$top_info);
-	while($line=$t->getline()) {
-		# Failsafe: Just in case 'Current configuration'
-		# doesn't appear, assume config begins with 'version'
-		# or first valid comment.
-		if($line=~/^version / || $line=~/^\!/) {
-			$top_info.=$line;
-			last;
-		} else {
-			$top_info.='!!' . $line;
-		}
-		# Normally, finding the "Current configuration" line
-		# will be enough to exit this loop.
-		last if $line=~/^Current configuration/;
-	}
+    # Prevent "show run" command from appearing in config dump
+    #$t->getline();
 
     my $save_timeout;
     if (defined($fetch_timeout)) {
@@ -234,7 +221,7 @@ sub chat_fetch {
         $t->timeout($fetch_timeout);
     }
 
-    ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
+    ($prematch, $match) = $self->expect_enable_prompt_paging($t, $prompt, '--More-- ');
     if (!defined($prematch)) {
 	$self->log_error("could not find end of configuration");
 	return 1;
@@ -244,9 +231,9 @@ sub chat_fetch {
         $t->timeout($save_timeout);
     }
 
-    $self->log_debug("found end of configuration: [$match]");
+    $self->log_debug("found end of configuration: '$match'");
 
-    @$conf_ref = split /\n/, $top_info . $prematch;
+    @$conf_ref = split /\n/, $prematch;
 
     $self->log_debug("fetched: " . scalar @$conf_ref . " lines");
 
@@ -278,6 +265,9 @@ sub do_fetch {
 
     my $t = new Net::Telnet(Errmode => 'return', Timeout => $dev_timeout);
 
+    my $tm = $t->telnetmode(1);
+    $self->log_debug("telnet command interpretation was: " . ($tm ? "on" : "off"));
+
     my $ok = $t->open($dev_host);
     if (!$ok) {
 	$self->log_error("could not connect: $!");
@@ -285,6 +275,9 @@ sub do_fetch {
     }
 
     $self->log_debug("connected");
+
+    $tm = $t->telnetmode();
+    $self->log_debug("telnet command interpretation is: " . ($tm ? "on" : "off"));
 
     my $prompt = $self->chat_login($t, $dev_id, $dev_host, $dev_opt_tab);
 

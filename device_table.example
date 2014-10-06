@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.12 2010/10/07 16:10:25 evertonm Exp $
+# $Id: device_table.example,v 1.13 2010/12/02 19:38:29 evertonm Exp $
 #
 
 # DEFAULT OPTIONS SECTION
@@ -40,6 +40,10 @@ default:        3com-msr        user=admin,pass=lab,enable=lab
 default:        3com-msr        timeout=10,keep=5,changes_only=0
 default:        3com-msr        repository=/var/fetchconfig/save
 
+default:        mikrotik        user=admin,pass=
+default:        mikrotik        timeout=10,keep=5,changes_only=0
+default:        mikrotik        repository=/var/fetchconfig/save
+
 # DEVICES SECTION
 #
 # model		dev-unique-id	hostname	device-specific-options
@@ -63,3 +67,5 @@ dmswitch        lab3224F2       10.1.59.130
 cisco-asa	fw1-1		10.1.1.1	user=fwadmin,pass=fwpass,enable=fwpass
 
 3com-msr        lab20-11        10.0.0.147
+
+mikrotik        lab-rb800       10.0.0.147
