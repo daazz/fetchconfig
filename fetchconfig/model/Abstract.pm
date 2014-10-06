@@ -16,12 +16,13 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id$
+# $Id: Abstract.pm,v 1.2 2006/06/22 14:48:13 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
 use strict;
 use warnings;
+use File::Compare;
 
 ####################################
 # Implement model::Abstract - Begin
@@ -127,7 +128,8 @@ sub dump_config {
     if (! -d $dir_path) {
 	my $mk;
 	if ($^O eq 'MSWin32') {
-	    my $path =~ tr/\//\\/;
+	    my $path = $dir_path;
+	    $path =~ tr/\//\\/;
 	    $mk = "mkdir $path";
 	}
 	else {
@@ -241,7 +243,16 @@ sub config_equal {
     my $prev_path = "$prev_dir/$prev_file";
     my $curr_path = "$curr_dir/$curr_file";
 
-    system("cmp $prev_path $curr_path >/dev/null 2>/dev/null") == 0;
+    my $result = compare($prev_path, $curr_path);
+    if ($result < 0) {
+	$self->log_error("failure comparing $prev_path to $curr_path");
+    }
+
+    # -1: error: return false, in order to keep the newer version
+    # 0: equal: return true, in order to allow discarding the newer version
+    # 1: distinct: return false, in order to keep the newer version
+
+    !$result;
 }
 
 sub prune_dir_tree {

@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id$
+# $Id: Detector.pm,v 1.2 2006/06/22 14:48:13 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -100,6 +100,7 @@ sub parse {
 
 	if (defined($latest_dir)) {
 	    if ($mod->config_equal($latest_dir, $latest_file, $config_dir, $config_file)) {
+		$logger->debug("dev=$dev_id host=$dev_host: config unchanged since last run");
 		$mod->config_discard($config_dir, $config_file);
 	    }
 	}

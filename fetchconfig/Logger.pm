@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id$
+# $Id: Logger.pm,v 1.1 2006/06/08 20:28:39 evertonm Exp $
 
 package fetchconfig::Logger; # fetchconfig/Logger.pm
 

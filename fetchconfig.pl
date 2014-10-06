@@ -18,14 +18,28 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id$
+# $Id: fetchconfig.pl,v 1.2 2006/06/22 14:48:13 evertonm Exp $
 
 use strict;
 use fetchconfig::Logger;
 use fetchconfig::model::Detector;
 
-my $me = `basename $0`;
-chomp $me;
+sub basename {
+    my ($path) = @_;
+
+    my @list;
+
+    if ($^O eq 'MSWin32') {
+	@list = split /\\/, $path;
+    }
+    else {
+	@list = split /\//, $path;
+    }
+
+    pop @list;
+}
+
+my $me = basename($0);
 
 my $log = fetchconfig::Logger->new({ prefix => $me });
 
