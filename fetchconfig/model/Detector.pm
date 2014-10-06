@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.13 2007/11/05 15:33:06 evertonm Exp $
+# $Id: Detector.pm,v 1.14 2008/01/21 19:55:04 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -113,7 +113,14 @@ sub parse {
 	    ($latest_dir, $latest_file) = $mod->find_latest($dev_id, $dev_opt_tab);
 	}
 
+	my $fetch_ts_start = time;
+	$logger->info("dev=$dev_id host=$dev_host: retrieving config at " . scalar(localtime($fetch_ts_start)));
+
 	my ($config_dir, $config_file) = $mod->fetch($file, $num, $line, $dev_id, $dev_host, $dev_opt_tab);
+
+	my $fetch_elap = time - $fetch_ts_start;
+	$logger->info("dev=$dev_id host=$dev_host: config retrieval took $fetch_elap secs");
+
 	return unless defined($config_dir);
 
 	if (defined($latest_dir)) {
