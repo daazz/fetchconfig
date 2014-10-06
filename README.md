@@ -3,13 +3,13 @@ fetchconfig
 
 original project from: http://download.savannah.gnu.org/releases/fetchconfig/
 
+
 INTRODUCTION
 ============
 
 	fetchconfig is a Perl script for retrieving configuration of
-        multiple devices.
-
-	fetchconfig currently supports Cisco IOS devices.
+	multiple devices. Cisco IOS and CatOS devices are currently
+	supported. The tool has been tested under Linux and Windows.
 
 LICENSE
 =======
@@ -102,7 +102,8 @@ DEVICE TABLE
 OPTIONS
 =======
 
-	The CiscoIOS module recognizes the following options:
+	The CiscoIOS and CiscoCAT modules recognizes the following
+	options:
 
 	pass		A mandatory option, specifies the login password.
 
@@ -113,6 +114,11 @@ OPTIONS
 
 	timeout		Mandatory, how long to wait for TELNET responses
                         from devices.
+
+	fetch_timeout	Optional. If given, will override the timeout
+                        value used to fetch all the configuration lines.
+                        It is useful for devices which spend several
+                        seconds building the configuration.
 
 	repository	Mandatory, specifies the base directory for
                         saving the configuration files.

@@ -1,5 +1,6 @@
 # fetchconfig - Retrieving configuration for multiple devices
 # Copyright (C) 2006 Everton da Silva Marques
+# Copyright (C) 2006 Marcos Sandez
 #
 # fetchconfig is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,23 +17,23 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: CiscoIOS.pm,v 1.2 2006/08/29 19:27:53 evertonm Exp $
+# $Id: CiscoCAT.pm,v 1.2 2006/08/29 19:27:53 evertonm Exp $
 
-package fetchconfig::model::CiscoIOS; # fetchconfig/model/CiscoIOS.pm
+package fetchconfig::model::CiscoCAT; # fetchconfig/model/CiscoCAT.pm
 
 use strict;
 use warnings;
 use Net::Telnet;
 use fetchconfig::model::Abstract;
 
-@fetchconfig::model::CiscoIOS::ISA = qw(fetchconfig::model::Abstract);
+@fetchconfig::model::CiscoCAT::ISA = qw(fetchconfig::model::Abstract);
 
 ####################################
 # Implement model::Abstract - Begin
 #
 
 sub label {
-    'cisco-ios';
+    'cisco-cat';
 }
 
 # "sub new" fully inherited from fetchconfig::model::Abstract
@@ -102,7 +103,7 @@ sub chat_login {
 	    return undef;
 	}
 
-        ($prematch, $match) = $t->waitfor(Match => '/(\S+)[>#]$/');
+        ($prematch, $match) = $t->waitfor(Match => '/(\S+)> $/');
 	if (!defined($prematch)) {
 	    $self->log_error("could not find command prompt");
 	    return undef;
@@ -111,14 +112,14 @@ sub chat_login {
 	$self->log_debug("found command prompt: [$match]");
     }
 
-    if ($match =~ /^\S+>$/) {
+    if ($match =~ /^\S+> $/) {
         $ok = $t->print('enable');
 	if (!$ok) {
 	    $self->log_error("could not send enable command");
 	    return undef;
 	}
 	
-        ($prematch, $match) = $t->waitfor(Match => '/(Password: |\S+#)$/');
+        ($prematch, $match) = $t->waitfor(Match => '/(Password: |\S+> \(enable\) )$/');
 	if (!defined($prematch)) {
 	    $self->log_error("could not find enable password prompt");
 	    return undef;
@@ -137,7 +138,7 @@ sub chat_login {
 		return undef;
 	    }
 
-	    ($prematch, $match) = $t->waitfor(Match => '/\S+#$/');
+	    ($prematch, $match) = $t->waitfor(Match => '/\S+> \(enable\) $/');
 	    if (!defined($prematch)) {
 		$self->log_error("could not find enable command prompt");
 		return undef;
@@ -147,7 +148,7 @@ sub chat_login {
 	$self->log_debug("found enable prompt: [$match]");
     }
 
-    if ($match !~ /^(\S+)\#$/) {
+    if ($match !~ /^(\S+)> \(enable\) $/) {
 	$self->log_error("could not match enable command prompt");
 	return undef;
     }
@@ -169,7 +170,7 @@ sub expect_enable_prompt {
 	return undef;
     }
 
-    my $enable_prompt_regexp = '/' . $prompt . '#$/';
+    my $enable_prompt_regexp = '/' . $prompt . '> \(enable\) $/';
 
     my ($prematch, $match) = $t->waitfor(Match => $enable_prompt_regexp);
     if (!defined($prematch)) {
@@ -183,7 +184,7 @@ sub chat_fetch {
     my ($self, $t, $dev_id, $dev_host, $prompt, $fetch_timeout, $conf_ref) = @_;
     my $ok;
     
-    $ok = $t->print('term len 0');
+    $ok = $t->print('set len 0');
     if (!$ok) {
 	$self->log_error("could not send pager disabling command");
 	return 1;
@@ -192,7 +193,7 @@ sub chat_fetch {
     my ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
     return unless defined($prematch);
 
-    $ok = $t->print('sh run');
+    $ok = $t->print('sh config');
     if (!$ok) {
 	$self->log_error("could not send show running command");
 	return 1;
