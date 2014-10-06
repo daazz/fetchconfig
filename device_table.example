@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.4 2006/08/30 12:19:48 evertonm Exp $
+# $Id: device_table.example,v 1.5 2006/12/10 01:23:12 djschaap Exp $
 #
 
 #
@@ -23,6 +23,7 @@ default:	cisco-cat	repository=/var/fetchconfig/save
 #
 cisco-ios	inet-gw		10.0.0.1
 cisco-ios	vpn-gw		192.168.0.1	keep=10,changes_only=1
+cisco-ios	ancient-ios	192.168.0.3	show_cmd=wrterm
 
 cisco-cat	sales-sw	172.16.0.10
 cisco-cat	eng-sw		172.16.0.11	keep=10,changes_only=1

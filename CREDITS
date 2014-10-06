@@ -1,5 +1,6 @@
 #
-# $Id: CREDITS,v 1.1 2006/08/25 21:58:04 evertonm Exp $
+# $Id: CREDITS,v 1.2 2007/01/10 18:14:28 djschaap Exp $
 #
 
 Marcos Sandez <sandez.marcos@gene.com> contributed CiscoCAT.pm
+Doug Schaapveld <djschaap@gmail.com> added FortiGate.pm, old IOS support

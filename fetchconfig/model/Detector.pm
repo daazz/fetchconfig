@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.3 2006/08/25 21:58:04 evertonm Exp $
+# $Id: Detector.pm,v 1.6 2007/01/11 15:11:38 djschaap Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -24,6 +24,8 @@ use strict;
 use warnings;
 use fetchconfig::model::CiscoIOS;
 use fetchconfig::model::CiscoCAT;
+use fetchconfig::model::FortiGate;
+use fetchconfig::model::ProCurve;
 
 my $logger;
 my %model_table;
@@ -129,6 +131,8 @@ sub init {
 
     $class->register(fetchconfig::model::CiscoIOS->new($log));
     $class->register(fetchconfig::model::CiscoCAT->new($log));
+    $class->register(fetchconfig::model::FortiGate->new($log));
+    $class->register(fetchconfig::model::ProCurve->new($log));
 }
 
 1;

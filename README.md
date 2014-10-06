@@ -3,13 +3,13 @@ fetchconfig
 
 original project from: http://download.savannah.gnu.org/releases/fetchconfig/
 
-
 INTRODUCTION
 ============
 
 	fetchconfig is a Perl script for retrieving configuration of
-	multiple devices. Cisco IOS and CatOS devices are currently
-	supported. The tool has been tested under Linux and Windows.
+	multiple devices. It has been tested under Linux and Windows,
+	and currently supports a variety of devices, including Cisco
+	IOS, Cisco Catalyst, FortiGate and ProCurve.
 
 LICENSE
 =======
@@ -32,14 +32,14 @@ LICENSE
 	write to the Free Software Foundation, Inc., 51 Franklin St,
 	Fifth Floor, Boston, MA 02110-1301 USA.
 
-INSTALLATION
-============
-
+INSTALLATION (UNIX/Linux)
+=========================
 	1. fetchconfig.pl expects a Perl interpreter at /usr/bin/perl.
 
 	2. fetchconfig.pl requires the Net::Telnet module.
+	(Use "cpan install Net::Telnet" if you don't have it.)
 
-	3. Just unpack the fetchconfig tarball at a suitable
+	3. Unpack the fetchconfig tarball at a suitable
         location. Example:
 
 	[ fetchconfig tarball available at /tmp/fetchconfig-0.0.tar.gz ]
@@ -49,6 +49,34 @@ INSTALLATION
 	ln -s fetchconfig-0.0 fetchconfig
 
 	[ fetchconfig is now available under /usr/local/fetchconfig ]
+
+INSTALLATION (Windows)
+======================
+
+	1. fetchconfig.pl expects to find a Perl interpreter in the PATH.
+
+	2. fetchconfig.pl requires the Net::Telnet module.
+	(Use "cpan install Net::Telnet" if you don't have it.)
+
+	3. Unpack the fetchconfig tarball at a suitable
+	location.  From the command line, gzip and tar (links
+	below) can be used.
+	http://www.gzip.org
+	http://gnuwin32.sourceforge.net/packages/tar.htm
+
+	Alternatively, some commercial programs (such as WinZip)
+	offer a GUI.
+
+	Command Line Example:
+
+	[ fetchconfig tarball available at c:\temp\fetchconfig-0.0.tar.gz ]
+
+	c:
+	cd \
+	gzip -cd c:\temp\fetchconfig-0.0.tar.gz | tar xvf -
+	move fetchconfig-0.0 fetchconfig
+
+	[ fetchconfig is now available under c:\fetchconfig ]
 
 USAGE
 =====
@@ -99,10 +127,28 @@ DEVICE TABLE
 	a) an unique identifier across all devices;
 	b) a valid filesystem's directory name.
 
+DEVICE SUPPORT
+==============
+
+	The following devices are known to be supported.  This
+	is not a comprehensive list.  Other devices and versions
+	are likely to work but have not been verified.
+
+	Model Name	Devices/OS Supported
+
+	cisco-cat	CatOS switches
+
+	cisco-ios	IOS routers
+			2500 series, 2600 series, 2800 series,
+			CS-516 (with show_cmd=wrterm option)
+
+	fortigate	FortiOS 3.0
+
+
 OPTIONS
 =======
 
-	The CiscoIOS and CiscoCAT modules recognizes the following
+	The CiscoIOS and CiscoCAT modules recognize the following
 	options:
 
 	pass		A mandatory option, specifies the login password.
@@ -133,4 +179,29 @@ OPTIONS
                         runs; if not defined as changes_only=1, the
 			script might possibly retain multiple identical
 			configuration files.
+
+	Options specific to CiscoIOS:
+
+	show_cmd	Optional.  If specified as show_cmd=wrterm,
+                        "write term" will be used in place of the
+                        usual "show run" command.  This is necessary
+                        for some older devices.  Values other than
+                        wrterm should have no effect.
+
+	The fortigate module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+
+	pass		Mandatory.
+
+	repository	Mandatory.
+
+	keep		Mandatory.
+
+	timeout		Mandatory.
+
+	fetch_timeout	Optional.
+
+	changes_only	Optional.
 

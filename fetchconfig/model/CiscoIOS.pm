@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: CiscoIOS.pm,v 1.2 2006/08/29 19:27:53 evertonm Exp $
+# $Id: CiscoIOS.pm,v 1.4 2007/01/10 18:14:28 djschaap Exp $
 
 package fetchconfig::model::CiscoIOS; # fetchconfig/model/CiscoIOS.pm
 
@@ -180,7 +180,7 @@ sub expect_enable_prompt {
 }
 
 sub chat_fetch {
-    my ($self, $t, $dev_id, $dev_host, $prompt, $fetch_timeout, $conf_ref) = @_;
+    my ($self, $t, $dev_id, $dev_host, $prompt, $fetch_timeout, $show_cmd, $conf_ref) = @_;
     my $ok;
     
     $ok = $t->print('term len 0');
@@ -192,11 +192,39 @@ sub chat_fetch {
     my ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
     return unless defined($prematch);
 
-    $ok = $t->print('sh run');
+    my $full_show_cmd="show run";
+    if(defined($show_cmd)) {
+      if($show_cmd eq "wrterm") {
+        $full_show_cmd="write term";
+      }
+    }
+
+    $ok = $t->print($full_show_cmd);
     if (!$ok) {
-	$self->log_error("could not send show running command");
+	$self->log_error("could not send show run command: $show_cmd");
 	return 1;
     }
+
+	# Prevent "show run" command from appearing in config dump
+	$t->getline();
+
+	# Commment out garbage at top so config file can be restored
+	# cleanly at a later date
+	my($line,$top_info);
+	while($line=$t->getline()) {
+		# Failsafe: Just in case 'Current configuration'
+		# doesn't appear, assume config begins with 'version'
+		# or first valid comment.
+		if($line=~/^version / || $line=~/^\!/) {
+			$top_info.=$line;
+			last;
+		} else {
+			$top_info.='!!' . $line;
+		}
+		# Normally, finding the "Current configuration" line
+		# will be enough to exit this loop.
+		last if $line=~/^Current configuration/;
+	}
 
     my $save_timeout;
     if (defined($fetch_timeout)) {
@@ -216,7 +244,7 @@ sub chat_fetch {
 
     $self->log_debug("found end of configuration: [$match]");
 
-    @$conf_ref = split /\n/, $prematch;
+    @$conf_ref = split /\n/, $top_info . $prematch;
 
     $self->log_debug("fetched: " . scalar @$conf_ref . " lines");
 
@@ -264,7 +292,9 @@ sub do_fetch {
 
     my $fetch_timeout = $self->dev_option($dev_opt_tab, "fetch_timeout");
 
-    return if $self->chat_fetch($t, $dev_id, $dev_host, $prompt, $fetch_timeout, \@config);
+    my $show_cmd = $self->dev_option($dev_opt_tab, "show_cmd");
+
+    return if $self->chat_fetch($t, $dev_id, $dev_host, $prompt, $fetch_timeout, $show_cmd, \@config);
 
     $ok = $t->close;
     if (!$ok) {
