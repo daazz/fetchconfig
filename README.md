@@ -147,6 +147,8 @@ DEVICE SUPPORT
 
 	parks		Parks 209R
 
+	riverstone	Alcatel Ethernet Router 3100 (Riverstone RS3100)
+
 
 OPTIONS
 =======
@@ -220,4 +222,16 @@ OPTIONS
                         It is useful since the Parks 209R spends
  			many seconds before issuing the initial
 			login prompt for TELNET connections.
+
+	The riverstone module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	enable		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	timeout		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
 

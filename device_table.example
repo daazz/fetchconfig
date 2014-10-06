@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.6 2007/07/12 23:40:58 evertonm Exp $
+# $Id: device_table.example,v 1.8 2007/07/17 15:05:50 evertonm Exp $
 #
 
 # DEFAULT OPTIONS SECTION
@@ -17,8 +17,13 @@ default:	cisco-cat	repository=/var/fetchconfig/save
 
 default:        parks           user=admin,pass=parks
 default:        parks           timeout=2,keep=5
-default:        parks           fetch_timeout=10,banner_timeout=60
+default:        parks           fetch_timeout=30,banner_timeout=60
 default:        parks           repository=/var/fetchconfig/save
+
+default:        riverstone      user=rs3,pass=100,enable=adm
+default:        riverstone      timeout=3,keep=3
+default:        riverstone      fetch_timeout=30
+default:        riverstone      repository=/var/fetchconfig/save
 
 # DEVICES SECTION
 #
@@ -32,3 +37,5 @@ cisco-cat	sales-sw	172.16.0.10
 cisco-cat	eng-sw		172.16.0.11	keep=10,changes_only=1
 
 parks           lab209r		10.30.0.6
+
+riverstone      lab3100         10.1.30.2
