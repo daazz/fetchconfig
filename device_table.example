@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.9 2008/02/13 11:20:25 evertonm Exp $
+# $Id: device_table.example,v 1.10 2008/04/24 21:59:19 evertonm Exp $
 #
 
 # DEFAULT OPTIONS SECTION
@@ -29,6 +29,10 @@ default:	terayon-os	user=testuser,pass=testpassword,enable=testenable
 default:	terayon-os	timeout=60,keep=50,changes_only=0
 default:	terayon-os	repository=/var/fetchconfig/save
 
+default:        dmswitch        user=dm,pass=dmpass
+default:        dmswitch        timeout=10,keep=5,changes_only=0
+default:        dmswitch        repository=/var/fetchconfig/save
+
 # DEVICES SECTION
 #
 # model		dev-unique-id	hostname	device-specific-options
@@ -47,3 +51,4 @@ riverstone      lab3100         10.1.30.2
 terayon-os	cmts-1		10.10.1.1
 terayon-os	cmts-2		10.10.1.2
 
+dmswitch        lab3224F2       10.1.59.130

@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.7 2008/02/14 19:15:55 evertonm Exp $
+# $Id: Abstract.pm,v 1.9 2008/02/19 13:48:18 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
@@ -207,6 +207,13 @@ sub dump_config {
 	}
     }
 
+    my $dev_timezone = $self->dev_option($dev_opt_tab, "timezone");
+    if (defined($dev_timezone)) {
+	if ($dev_timezone =~ /hide/i) {
+		$tz_off = '';
+	}
+    }
+
     my $file = sprintf("${dev_id}.run.%04d%02d%02d.%02d%02d%02d$tz_off",
 		       $year, $mon, $day, $hour, $min, $sec);
 
@@ -361,7 +368,7 @@ sub purge_ancient {
 
     my $dev_keep = $self->dev_option($dev_opt_tab, "keep");
     if (!defined($dev_keep)) {
-	$self->log_error("unspecified maximum of config files to keep");
+	$self->log_error("dev=$dev_id: unspecified maximum of config files to keep");
 	return;
     }
 
@@ -370,13 +377,15 @@ sub purge_ancient {
     my %dir_tab;
 
     if ($self->scan_dir(\%dir_tab, $dev_id, $dev_repository)) {
-	$self->log_error("could not load full device config list - error scanning repository");
+	$self->log_error("dev=$dev_id: could not load full device config list - error scanning repository");
 	return;
     }
 
     my @files = keys %dir_tab;
 
     my $expired = @files - $dev_keep;
+
+    $self->log_debug("dev=$dev_id: expire: existing=". scalar @files . " keep=$dev_keep should_expire=$expired");
 
     return if ($expired < 1);
 
@@ -386,7 +395,7 @@ sub purge_ancient {
 	my $file = $sorted[$i];
 	my $dir = $dir_tab{$file};
 
-	$self->log_debug("expiring: $dir/$file");
+	$self->log_debug("dev=$dev_id: expiring: $dir/$file");
 
 	$self->config_discard($dir, $file);
     }

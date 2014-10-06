@@ -11,7 +11,7 @@ INTRODUCTION
 	and currently supports a variety of devices, including Cisco
 	IOS, Cisco Catalyst, FortiGate, ProCurve, Alcatel Ethernet
 	Routers (aka Riverstone), Dell PowerConnect Switches,
-	Terayon 3200/3500 CMTS.
+	Terayon 3200/3500 CMTS, Datacom DmSwitch Switches.
 
 LICENSE
 =======
@@ -153,6 +153,8 @@ DEVICE SUPPORT
 
 	terayon-os	Terayon 3200/3500 CMTS
 
+	dmswitch	Datacom DmSwitch
+
 
 OPTIONS
 =======
@@ -206,6 +208,9 @@ OPTIONS
 			is finished. This option is available for all
 			modules.
 
+	timezone	Optional. If defined as timezone=hide, it will
+			supress timezone information from config filename.
+
 	Options specific to CiscoIOS:
 
 	show_cmd	Optional. If specified, its value will replace
@@ -228,6 +233,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	timezone	Optional.
 
 	The parks module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -240,6 +246,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	timezone	Optional.
 
 	Options specific to Parks:
 
@@ -261,6 +268,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	timezone	Optional.
 
 	The terayon-os module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -274,4 +282,18 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	timezone	Optional.
+
+	The dmswitch module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	timeout		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
+	timezone	Optional.
 

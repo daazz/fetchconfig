@@ -1,6 +1,6 @@
 Summary: fetchconfig device configuration retrieval software
 Name: fetchconfig
-Version: 0.13
+Version: 0.14
 Release: 1.rhfc5
 Group: Applications/System
 Url: http://savannah.nongnu.org/projects/fetchconfig
@@ -34,16 +34,8 @@ rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
 cp fetchconfig.pl $RPM_BUILD_ROOT/usr/lib/fetchconfig
-cp fetchconfig/Logger.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig
-cp fetchconfig/Constants.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig
-cp fetchconfig/model/Abstract.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
-cp fetchconfig/model/Detector.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
-cp fetchconfig/model/CiscoCAT.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
-cp fetchconfig/model/CiscoIOS.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
-cp fetchconfig/model/FortiGate.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
-cp fetchconfig/model/ProCurve.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
-cp fetchconfig/model/Parks.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
-cp fetchconfig/model/Riverstone.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
+cp fetchconfig/*.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig
+cp fetchconfig/model/*.pm $RPM_BUILD_ROOT/usr/lib/fetchconfig/fetchconfig/model
 
 mkdir -p $RPM_BUILD_ROOT/usr/bin
 #ln -sf ../lib/fetchconfig/fetchconfig.pl $RPM_BUILD_ROOT/usr/bin/fetchconfig
