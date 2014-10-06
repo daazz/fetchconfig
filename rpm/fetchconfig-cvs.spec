@@ -1,6 +1,6 @@
 Summary: fetchconfig device configuration retrieval software
 Name: fetchconfig
-Version: 0.9
+Version: 0.10
 Release: 1.rhfc5
 Group: Applications/System
 Url: http://savannah.nongnu.org/projects/fetchconfig

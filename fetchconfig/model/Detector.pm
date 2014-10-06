@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.12 2007/08/14 21:19:08 evertonm Exp $
+# $Id: Detector.pm,v 1.13 2007/11/05 15:33:06 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -73,7 +73,7 @@ sub parse {
     #cisco-ios       spo2            10.0.0.1 user=backup,pass=san,enable=fran
     #
 
-    if ($line !~ /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S.*)$/) {
+    if ($line !~ /^\s*(\S+)\s+(\S+)\s+(\S+)\s*(.*)$/) {
 	$logger->error("unrecognized device at file=$file line=$num: $line");
 	return;
     }
