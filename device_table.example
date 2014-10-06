@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.18 2012/04/04 20:29:44 evertonm Exp $
+# $Id: device_table.example,v 1.19 2013/10/16 03:29:11 evertonm Exp $
 #
 
 # DEFAULT OPTIONS SECTION
@@ -58,6 +58,16 @@ default:	junos		timeout=10,keep=5,changes_only=0
 default:	junos		filename_append_suffix=.txt
 default:	junos		repository=/var/fetchconfig/save
 
+default:	acme		user=admin,pass=acme
+default:	acme		timeout=10,keep=5,changes_only=0
+default:	acme		filename_append_suffix=.txt
+default:	acme		repository=/var/fetchconfig/save
+
+default:	mediant		user=Admin,pass=Admin
+default:	mediant		timeout=10,keep=5,changes_only=0
+default:	mediant		filename_append_suffix=.txt
+default:	mediant		repository=/var/fetchconfig/save
+
 # DEVICES SECTION
 #
 # model		dev-unique-id	hostname	device-specific-options
@@ -89,3 +99,7 @@ cisco-pix	lab-pix		10.0.0.1	user=pixadmin,pass=pixpass,enable=pixenable
 tellabs-msr     8800-lab        1.1.1.1
 
 junos		ex4200-1	10.1.0.100
+
+acme		sbc1		10.2.2.2
+
+mediant		gateway1	11.0.0.2

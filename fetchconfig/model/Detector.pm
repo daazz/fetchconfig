@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.26 2012/04/04 20:29:44 evertonm Exp $
+# $Id: Detector.pm,v 1.28 2013/10/16 03:29:11 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -37,6 +37,8 @@ use fetchconfig::model::MikroTik;
 use fetchconfig::model::CiscoPIX;
 use fetchconfig::model::TellabsMSR;
 use fetchconfig::model::JunOS;
+use fetchconfig::model::Acme;
+use fetchconfig::model::Mediant;
 
 my $logger;
 my %model_table;
@@ -52,7 +54,7 @@ sub parse {
 
     if ($line =~ /^\s*default:/) {
 	#
-        ## global        model           options
+       ## global        model           options
         # default:       cisco-ios       user=backup,pass=san,enable=san
 	#
 	if ($line !~ /^\s*(\S+)\s+(\S+)\s+(\S.*)$/) {
@@ -123,13 +125,15 @@ sub parse {
     my $dev_changes_only = $mod->dev_option($dev_opt_tab, "changes_only");
 
     my $dev_run = $mod->dev_option($dev_opt_tab, "on_fetch_run");
+    my $dev_cat = $mod->dev_option($dev_opt_tab, "on_fetch_cat");
 
     #
     # Do we need to locate the latest backup?
     # - changes_only means we need to compare in order to detect change
     # - on_fetch_run means we need to pass it to the external program
+    # - on_fetch_cat means we need to copy it to stdout
     #
-    if ($dev_changes_only || $dev_run) {
+    if ($dev_changes_only || $dev_run || $dev_cat) {
 	($latest_dir, $latest_file) = $mod->find_latest($dev_id, $dev_opt_tab);
     }
 
@@ -149,6 +153,8 @@ sub parse {
 	$cfg_equal = $mod->config_equal($latest_dir, $latest_file, $config_dir, $config_file);
     }
 
+    my $curr = "$config_dir/$config_file";
+
     if ($dev_run) {
 	$ENV{FETCHCONFIG_DEV_ID} = $dev_id;
 	$ENV{FETCHCONFIG_DEV_HOST} = $dev_host;
@@ -158,12 +164,28 @@ sub parse {
 	else {
 	    delete $ENV{FETCHCONFIG_PREV};
 	}
-	$ENV{FETCHCONFIG_CURR} = "$config_dir/$config_file";
+	$ENV{FETCHCONFIG_CURR} = $curr;
 	system($dev_run);
 	delete $ENV{FETCHCONFIG_DEV_ID};
 	delete $ENV{FETCHCONFIG_DEV_HOST};
 	delete $ENV{FETCHCONFIG_PREV};
 	delete $ENV{FETCHCONFIG_CURR};
+    }
+
+    if ($dev_cat) {
+	local *IN;
+    
+	if (!open(IN, "<$curr")) {
+	    $logger->error("could not read current config: $curr: $!");
+	    return;
+	}
+
+	my @cfg = <IN>;
+	chomp @cfg;
+
+	print STDOUT @cfg;
+
+	close IN;
     }
 
     if ($dev_changes_only && $cfg_equal) {
@@ -202,6 +224,8 @@ sub init {
     $class->register(fetchconfig::model::CiscoPIX->new($log));
     $class->register(fetchconfig::model::TellabsMSR->new($log));
     $class->register(fetchconfig::model::JunOS->new($log));
+    $class->register(fetchconfig::model::Acme->new($log));
+    $class->register(fetchconfig::model::Mediant->new($log));
 }
 
 1;

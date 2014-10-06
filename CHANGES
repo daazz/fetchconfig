@@ -1,6 +1,14 @@
 #
-# $Id: CHANGES,v 1.51 2012/04/04 20:29:43 evertonm Exp $
+# $Id: CHANGES,v 1.53 2013/10/16 03:29:10 evertonm Exp $
 #
+
+0.23
+====
++ support for -line=string switch for passing device table lines
+  directly into the command-line.
++ option on_fetch_cat=1 issues current configuration to stdout.
++ Acme.pm: support for Oracle Acme Packet.
++ Mediant.pm: support for Audiocodes Mediant.
 
 0.22
 ====

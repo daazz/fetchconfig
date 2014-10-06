@@ -18,7 +18,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: fetchconfig.pl,v 1.7 2007/07/20 17:05:39 evertonm Exp $
+# $Id: fetchconfig.pl,v 1.8 2012/11/27 21:42:28 evertonm Exp $
 
 use strict;
 use fetchconfig::Logger;
@@ -47,6 +47,7 @@ my $log = fetchconfig::Logger->new({ prefix => $me });
 $log->info('version ' . fetchconfig::Constants::version);
 
 my @device_file_list;
+my @line_list;
 
 foreach my $opt (@ARGV) {
     if ($opt eq '-v') {
@@ -56,13 +57,17 @@ foreach my $opt (@ARGV) {
 	push @device_file_list, $1;
 	next;
     }
+    if ($opt =~ /^-line=(.+)$/) {
+	push @line_list, $1;
+	next;
+    }
     $log->error("unexpected argument: $opt");
     &usage;
     die;
 }
 
-if (@device_file_list < 1) {
-    $log->error("at least one device list file is required");
+if ((@device_file_list < 1) && (@line_list < 1)){
+    $log->error("at least one -devices=filename or one -line=string is required");
     &usage;
     die;
 }
@@ -73,12 +78,18 @@ foreach my $dev_file (@device_file_list) {
     &load_device_list($dev_file);
 }
 
+my $line_num = 0;
+foreach my $line (@line_list) {
+    ++$line_num;
+    &load_line($line, $line_num);
+}
+
 $log->info("done");
 
 exit;
 
 sub usage {
-    warn "usage: $me [-v] -devices=file\n";
+    warn "usage: $me [-v] [-devices=file] [-line=string]\n";
 }
 
 sub load_device_list {
@@ -108,4 +119,14 @@ sub load_device_list {
     }
 		 
     close IN;
+}
+
+sub load_line {
+    my ($line, $num) = @_;
+    
+    $log->debug("loading line: line=$num [$line]");
+
+    return if ($line =~ /^\s*(#|$)/);
+
+    fetchconfig::model::Detector->parse('<cmdline>', $num, $line);
 }

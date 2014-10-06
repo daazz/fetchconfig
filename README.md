@@ -13,7 +13,8 @@ INTRODUCTION
 	Firewalls, ProCurve, Alcatel Ethernet Routers (aka
 	Riverstone), Dell PowerConnect Switches, Terayon 3200/3500
 	CMTS, Datacom DmSwitch Switches, HP MSR Routers, Mikrotik
-	Routers, Tellabs MSR Routers, Juniper EX Switch JunOS.
+	Routers, Tellabs MSR Routers, Juniper EX Switch JunOS, Oracle
+	Acme Packet, Audiocodes Mediant.
 
 LICENSE
 =======
@@ -132,6 +133,15 @@ DEVICE TABLE
 	a) an unique identifier across all devices;
 	b) a valid filesystem's directory name.
 
+EMBEDDING DEVICE TABLE INTO COMMAND LINE
+========================================
+
+	Valid lines for the device table file can also be passed
+	directly through the -line=string command line switch.
+
+	Example:
+	/path/to/fetchconfig.pl -line="default: tellabs-msr user=backup,pass=s&cr&t,timeout=10,keep=5,changes_only=0,fetch_timeout=1200,filename_append_suffix=.txt,repository=/path/to/repo" -line="tellabs-msr lab-router 10.0.0.1"
+
 DEVICE SUPPORT
 ==============
 
@@ -170,6 +180,10 @@ DEVICE SUPPORT
 
 	junos		Juniper EX Switch JunOS
 
+	acme		Oracle Acme Packet
+
+	mediant		Audiocodes Mediant
+
 
 OPTIONS
 =======
@@ -199,12 +213,12 @@ OPTIONS
                         to retain for the device. When this limit is
                         reached, the older files are discarded.
 
-	changes_only	Optional. If specified as changes_only=1,
-                        only new configurations are saved. Otherwise,
-                        configurations are saved whenever the script
-                        runs; if not defined as changes_only=1, the
-			script might possibly retain multiple identical
-			configuration files.
+	changes_only 	Optional. Boolean. If specified as
+			changes_only=1, only new configurations are
+			saved. Otherwise, configurations are saved
+			whenever the script runs; if not defined as
+			changes_only=1, the script might possibly
+			retain multiple identical configuration files.
 
 	on_fetch_run	Optional. Path to an external program to be
 			called whenever the configuration is fetched.
@@ -221,6 +235,12 @@ OPTIONS
 			backup file referenced to FETCHCONFIG_CURR
 			will be erased right after the external program
 			is finished. This option is available for all
+			modules.
+
+	on_fetch_cat	Optional. Boolean. If specified as
+			on_fetch_cat=1, the currently fetched
+			configuration is issued to standard
+			output. This option is available for all
 			modules.
 
 	timezone	Optional. If defined as timezone=hide, it will
@@ -254,6 +274,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -268,6 +289,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -291,6 +313,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -306,6 +329,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -320,6 +344,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -335,6 +360,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -350,6 +376,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -365,6 +392,7 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
@@ -379,6 +407,37 @@ OPTIONS
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
+	timezone	Optional.
+	filename_append_suffix Optional.
+
+	The acme module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Optional.
+	pass		Mandatory.
+	timeout		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
+	timezone	Optional.
+	filename_append_suffix Optional.
+
+	The mediant module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	timeout		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
+	on_fetch_cat	Optional.
 	timezone	Optional.
 	filename_append_suffix Optional.
 
