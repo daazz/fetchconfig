@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.10 2008/04/24 21:59:19 evertonm Exp $
+# $Id: device_table.example,v 1.11 2009/01/30 14:34:44 evertonm Exp $
 #
 
 # DEFAULT OPTIONS SECTION
@@ -33,6 +33,9 @@ default:        dmswitch        user=dm,pass=dmpass
 default:        dmswitch        timeout=10,keep=5,changes_only=0
 default:        dmswitch        repository=/var/fetchconfig/save
 
+default:	cisco-asa	timeout=10,keep=5,changes_only=1
+default:	cisco-asa	repository=/srv/fetchconfig
+
 # DEVICES SECTION
 #
 # model		dev-unique-id	hostname	device-specific-options
@@ -52,3 +55,5 @@ terayon-os	cmts-1		10.10.1.1
 terayon-os	cmts-2		10.10.1.2
 
 dmswitch        lab3224F2       10.1.59.130
+
+cisco-asa	fw1-1		10.1.1.1	user=fwadmin,pass=fwpass,enable=fwpass
