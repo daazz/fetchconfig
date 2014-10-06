@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.4 2007/07/20 20:48:32 evertonm Exp $
+# $Id: Abstract.pm,v 1.5 2007/08/14 21:19:08 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
@@ -74,6 +74,20 @@ sub chat_banner {
     ($prematch, $match);
 }
 
+sub chat_show_conf {
+    my ($self, $t, $show_cmd_default, $show_cmd_custom) = @_;
+
+    my $cmd = defined($show_cmd_custom) ? $show_cmd_custom : $show_cmd_default;
+
+    my $ok = $t->print($cmd);
+    if (!$ok) {
+	$self->log_error("could not send show config command: $cmd");
+	return 1;
+    }
+
+    undef;
+}
+
 #
 # Implement model::Abstract - End
 ##################################
@@ -90,13 +104,27 @@ sub log_error {
     $self->{log}->error($self->label . ": " . $msg);
 }
 
+# remove heading and trailing blanks
+#
+# example: " a b c  " => "a b c"
+#
+sub opt_trim {
+    my ($opt) = @_;
+    if ($opt =~ /^\s*(\S|\S.*\S)\s*$/) {
+	return $1;
+    }
+    $opt;
+}
+
 sub parse_options {
     my ($self, $label, $file, $line_num, $line, $opt_tab_ref, @options) = @_;
 
     foreach (@options) {
 	foreach (split /,/) {
 	    if (/^([^=]+)=([^=]*)$/) {
-		$opt_tab_ref->{$1} = $2;
+		my $opt = opt_trim($1);
+		my $val = opt_trim($2);
+		$opt_tab_ref->{$opt} = $val;
 		next;
 	    }
 	    $self->log_error("bad $label option '$_' at file=$file line=$line_num: $line");

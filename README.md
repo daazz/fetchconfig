@@ -188,11 +188,14 @@ OPTIONS
 
 	Options specific to CiscoIOS:
 
-	show_cmd	Optional.  If specified as show_cmd=wrterm,
-                        "write term" will be used in place of the
-                        usual "show run" command.  This is necessary
-                        for some older devices.  Values other than
-                        wrterm should have no effect.
+	show_cmd	Optional. If specified, its value will replace
+			the usual "show run" command. This is necessary
+                        for some older devices. It may be useful to
+			send alternative commands to capture the
+			configuration. To keep compatibility with
+			previous versions of fetchconfig, if specified
+			as show_cmd=wrterm, "write term" will be used
+			in place of the usual "show run" command.
 
 	The fortigate module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)

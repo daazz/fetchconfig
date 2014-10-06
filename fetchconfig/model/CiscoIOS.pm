@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: CiscoIOS.pm,v 1.6 2007/07/20 20:48:32 evertonm Exp $
+# $Id: CiscoIOS.pm,v 1.7 2007/08/14 21:19:08 evertonm Exp $
 
 package fetchconfig::model::CiscoIOS; # fetchconfig/model/CiscoIOS.pm
 
@@ -197,16 +197,13 @@ sub chat_fetch {
     my ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
     return unless defined($prematch);
 
-    my $full_show_cmd="show run";
-    if(defined($show_cmd)) {
-      if($show_cmd eq "wrterm") {
-        $full_show_cmd="write term";
-      }
+    # Backward compatibility support for option "show_cmd=wrterm"
+    my $custom_cmd;
+    if (defined($show_cmd)) {
+	$custom_cmd = ($show_cmd eq 'wrterm') ? 'write term' : $show_cmd;
     }
 
-    $ok = $t->print($full_show_cmd);
-    if (!$ok) {
-	$self->log_error("could not send show run command: $full_show_cmd");
+    if ($self->chat_show_conf($t, 'show run', $custom_cmd)) {
 	return 1;
     }
 

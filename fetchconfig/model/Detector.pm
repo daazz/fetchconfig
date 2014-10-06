@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.11 2007/07/31 12:16:58 evertonm Exp $
+# $Id: Detector.pm,v 1.12 2007/08/14 21:19:08 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -42,15 +42,19 @@ sub parse {
 
     #$logger->debug("Detector->parse: $line");
 
-    my @row = split /\s+/, $line;
-    my $model_label = shift @row;
-
-    if ($model_label eq 'default:') {
+    if ($line =~ /^\s*default:/) {
 	#
         ## global        model           options
-        #
-        # default:       cisco-ios       user=backup,pass=cisco8,enable=cisco8
+        # default:       cisco-ios       user=backup,pass=san,enable=san
 	#
+	if ($line !~ /^\s*(\S+)\s+(\S+)\s+(\S.*)$/) {
+	    $logger->error("unrecognized default at file=$file line=$num: $line");
+	    return;
+	}
+
+	my @row = ($1, $2, $3);
+	my $model_label = shift @row;
+
 	$model_label = $row[0];
 	my $mod = $model_table{$model_label};
 	if (ref $mod) {
@@ -66,9 +70,17 @@ sub parse {
 
     #
     ## model         dev-unique-id   hostname        device-specific-options
+    #cisco-ios       spo2            10.0.0.1 user=backup,pass=san,enable=fran
     #
-    #cisco-ios       spo2            200.202.113.162 user=backup,pass=cisco8,enable=cisco8
-    #
+
+    if ($line !~ /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S.*)$/) {
+	$logger->error("unrecognized device at file=$file line=$num: $line");
+	return;
+    }
+
+    my @row = ($1, $2, $3, $4);
+    my $model_label = shift @row;
+
     my $mod = $model_table{$model_label};
     if (ref $mod) {
 	my $dev_id = shift @row;
