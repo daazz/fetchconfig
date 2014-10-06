@@ -1,6 +1,10 @@
 #
-# $Id: CHANGES,v 1.49 2011/06/20 19:27:38 evertonm Exp $
+# $Id: CHANGES,v 1.51 2012/04/04 20:29:43 evertonm Exp $
 #
+
+0.22
+====
++ JunOS.pm: support for Juniper JunOS.
 
 0.21
 ====

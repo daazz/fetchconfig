@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.17 2011/06/20 20:41:37 evertonm Exp $
+# $Id: device_table.example,v 1.18 2012/04/04 20:29:44 evertonm Exp $
 #
 
 # DEFAULT OPTIONS SECTION
@@ -53,6 +53,11 @@ default:        tellabs-msr     fetch_timeout=1200
 default:        tellabs-msr     repository=/var/fetchconfig/save
 default:	tellabs-msr	filename_append_suffix=.txt
 
+default:	junos		user=juniper,pass=jun@321
+default:	junos		timeout=10,keep=5,changes_only=0
+default:	junos		filename_append_suffix=.txt
+default:	junos		repository=/var/fetchconfig/save
+
 # DEVICES SECTION
 #
 # model		dev-unique-id	hostname	device-specific-options
@@ -82,3 +87,5 @@ mikrotik        lab-rb800       10.0.0.147
 cisco-pix	lab-pix		10.0.0.1	user=pixadmin,pass=pixpass,enable=pixenable
 
 tellabs-msr     8800-lab        1.1.1.1
+
+junos		ex4200-1	10.1.0.100

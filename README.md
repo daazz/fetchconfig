@@ -13,7 +13,7 @@ INTRODUCTION
 	Firewalls, ProCurve, Alcatel Ethernet Routers (aka
 	Riverstone), Dell PowerConnect Switches, Terayon 3200/3500
 	CMTS, Datacom DmSwitch Switches, HP MSR Routers, Mikrotik
-	Routers, Tellabs MSR Routers.
+	Routers, Tellabs MSR Routers, Juniper EX Switch JunOS.
 
 LICENSE
 =======
@@ -167,6 +167,8 @@ DEVICE SUPPORT
 	mikrotik	MikroTik routers
 
 	tellabs-msr	Tellabs MSR routers
+
+	junos		Juniper EX Switch JunOS
 
 
 OPTIONS
@@ -357,6 +359,20 @@ OPTIONS
 	user		Mandatory.
 	pass		Mandatory.
 	enable		Mandatory.
+	timeout		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
+	timezone	Optional.
+	filename_append_suffix Optional.
+
+	The junos module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
 	timeout		Mandatory.
 	repository	Mandatory.
 	keep		Mandatory.
