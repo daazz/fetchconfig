@@ -17,7 +17,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Dell.pm,v 1.1 2007/07/31 12:12:31 evertonm Exp $
+# $Id: Dell.pm,v 1.2 2009/02/03 11:07:55 evertonm Exp $
 
 package fetchconfig::model::Dell; # fetchconfig/model/Dell.pm
 
@@ -60,7 +60,7 @@ sub chat_login {
     my ($self, $t, $dev_id, $dev_host, $dev_opt_tab) = @_;
     my $ok;
 
-    my ($prematch, $match) = $t->waitfor(Match => '/(User Name:|Password:) ?$/');
+    my ($prematch, $match) = $t->waitfor(Match => '/(User Name:|User:|Password:) ?$/');
     if (!defined($prematch)) {
 	$self->log_error("could not find login prompt");
 	return undef;
@@ -68,7 +68,7 @@ sub chat_login {
 
     $self->log_debug("found login prompt: [$match]");
 
-    if ($match =~ /^User Name/) {
+    if ($match =~ /^User/) {
 	my $dev_user = $self->dev_option($dev_opt_tab, "user");
 	if (!defined($dev_user)) {
 	    $self->log_error("login username needed but not provided");
@@ -108,6 +108,20 @@ sub chat_login {
 	    return undef;
 	}
 
+	if ($match =~/>$/) {
+	    $ok = $t->print("enable");
+	    if (!$ok) {
+	        $self->log_error("could not send enable command");
+	        return undef;
+	    }
+
+            ($prematch, $match) = $t->waitfor(Match => '/(\S+)[#] ?$/');
+	    if (!defined($prematch)) {
+	        $self->log_error("could not find command prompt");
+	        return undef;
+	    }
+	}
+
 	$self->log_debug("found command prompt: [$match]");
     }
 
@@ -137,10 +151,51 @@ sub expect_enable_prompt {
 
     my ($prematch, $match) = $t->waitfor(Match => $enable_prompt_regexp);
     if (!defined($prematch)) {
+print STDERR "dbg: prematch is undef, match='$match'\n";
 	$self->log_error("could not match enable command prompt: $enable_prompt_regexp");
     }
 
     ($prematch, $match);
+}
+
+sub expect_enable_prompt_paging {
+    my ($self, $t, $prompt, $paging_prompt) = @_;
+
+    if (!defined($prompt)) {
+        $self->log_error("internal failure: undefined command prompt");
+        return undef;
+    }
+
+    my $prompt_regexp = '/(' . $prompt . '#)|(\Q' . $paging_prompt . '\E)$/';
+    my $paging_prompt_regexp = '/' . $paging_prompt . '$/';
+
+    my ($prematch, $match, $full_prematch);
+
+    for (;;) {
+        ($prematch, $match) = $t->waitfor(Match => $prompt_regexp);
+        if (!defined($prematch)) {
+            $self->log_error("could not match enable/paging prompt: $prompt_regexp");
+            return; # signals error with undef
+        }
+
+        #$self->log_debug("paging match: [$match]");
+
+        $full_prematch .= $prematch;
+
+        if ($match ne $paging_prompt) {
+            #$self->log_debug("done paging match: [$match][$paging_prompt_regexp]");
+            last;
+        }
+
+        # Do paging
+        my $ok = $t->put(' '); # SPACE
+        if (!$ok) {
+            $self->log_error("could not send paging SPACE command");
+            return; # signals error with undef
+        }
+    }
+
+    ($full_prematch, $match);
 }
 
 sub chat_fetch {
@@ -196,7 +251,7 @@ sub chat_fetch {
         $t->timeout($fetch_timeout);
     }
 
-    ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
+    ($prematch, $match) = $self->expect_enable_prompt_paging($t, $prompt, '--More-- or (q)uit');
     if (!defined($prematch)) {
 	$self->log_error("could not find end of configuration");
 	return 1;
