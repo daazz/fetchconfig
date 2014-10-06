@@ -16,13 +16,14 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.5 2007/08/14 21:19:08 evertonm Exp $
+# $Id: Abstract.pm,v 1.6 2008/02/12 12:25:24 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
 use strict;
 use warnings;
 use File::Compare;
+use POSIX qw(strftime);
 
 ####################################
 # Implement model::Abstract - Begin
@@ -162,10 +163,12 @@ sub dev_option {
 }
 
 sub get_timestr {
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+    my $ts = time;
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($ts);
     $year += 1900;
     ++$mon;
-    ($year, $mon, $mday, $hour, $min, $sec);
+    my $tz_off = strftime '%z', localtime($ts);
+    ($year, $mon, $mday, $hour, $min, $sec, $tz_off);
 }
 
 sub dump_config {
@@ -173,7 +176,7 @@ sub dump_config {
 
     my $dev_repository = $self->dev_option($dev_opt_tab, "repository");
 
-    my ($year, $mon, $day, $hour, $min, $sec) = get_timestr;
+    my ($year, $mon, $day, $hour, $min, $sec, $tz_off) = get_timestr;
 
     my $dir_path = sprintf("$dev_repository/%04d%02d/%04d%02d%02d/$dev_id",
 			   $year, $mon, $year, $mon, $day);
@@ -196,7 +199,7 @@ sub dump_config {
 	}
     }
 
-    my $file = sprintf("${dev_id}.run.%04d%02d%02d.%02d%02d%02d",
+    my $file = sprintf("${dev_id}.run.%04d%02d%02d.%02d%02d%02d$tz_off",
 		       $year, $mon, $day, $hour, $min, $sec);
 
     my $file_path = "$dir_path/$file";

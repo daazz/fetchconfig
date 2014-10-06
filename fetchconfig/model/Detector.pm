@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.14 2008/01/21 19:55:04 evertonm Exp $
+# $Id: Detector.pm,v 1.17 2008/02/12 18:59:40 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -29,6 +29,7 @@ use fetchconfig::model::ProCurve;
 use fetchconfig::model::Parks;
 use fetchconfig::model::Riverstone;
 use fetchconfig::model::Dell;
+use fetchconfig::model::Terayon;
 
 my $logger;
 my %model_table;
@@ -82,60 +83,84 @@ sub parse {
     my $model_label = shift @row;
 
     my $mod = $model_table{$model_label};
-    if (ref $mod) {
-	my $dev_id = shift @row;
-
-	my $dev_id_linenum = $dev_id_table{$dev_id};
-	if (defined($dev_id_linenum)) {
-	    $logger->error("duplicated dev_id=$dev_id at file=$file line=$num: $line (previous at line $dev_id_linenum)");
-	    return;
-	}
-
-	$dev_id_table{$dev_id} = $num;
-
-	my $dev_host = shift @row;
-
-	my $dev_opt_tab = {};
-
-	$mod->parse_options("dev=$dev_id",
-			    $file, $num, $line,
-			    $dev_opt_tab,
-			    @row);
-
-	my ($latest_dir, $latest_file);
-
-	#
-	# "changes_only" is true: configuration is saved only when changed
-	# "changes_only" is false: configuration is always saved
-	#
-	my $dev_changes_only = $mod->dev_option($dev_opt_tab, "changes_only");
-	if ($dev_changes_only) {
-	    ($latest_dir, $latest_file) = $mod->find_latest($dev_id, $dev_opt_tab);
-	}
-
-	my $fetch_ts_start = time;
-	$logger->info("dev=$dev_id host=$dev_host: retrieving config at " . scalar(localtime($fetch_ts_start)));
-
-	my ($config_dir, $config_file) = $mod->fetch($file, $num, $line, $dev_id, $dev_host, $dev_opt_tab);
-
-	my $fetch_elap = time - $fetch_ts_start;
-	$logger->info("dev=$dev_id host=$dev_host: config retrieval took $fetch_elap secs");
-
-	return unless defined($config_dir);
-
-	if (defined($latest_dir)) {
-	    if ($mod->config_equal($latest_dir, $latest_file, $config_dir, $config_file)) {
-		$logger->debug("dev=$dev_id host=$dev_host: config unchanged since last run");
-		$mod->config_discard($config_dir, $config_file);
-	    }
-	}
-
-	$mod->purge_ancient($dev_id, $dev_opt_tab);
-
+    if (! ref $mod) {
+	$logger->error("unknown model '$model_label' at file=$file line=$num: $line");
 	return;
     }
 
-    $logger->error("unknown model '$model_label' at file=$file line=$num: $line");
+    my $dev_id = shift @row;
+
+    my $dev_id_linenum = $dev_id_table{$dev_id};
+    if (defined($dev_id_linenum)) {
+	$logger->error("duplicated dev_id=$dev_id at file=$file line=$num: $line (previous at line $dev_id_linenum)");
+	return;
+    }
+
+    $dev_id_table{$dev_id} = $num;
+
+    my $dev_host = shift @row;
+
+    my $dev_opt_tab = {};
+
+    $mod->parse_options("dev=$dev_id",
+			$file, $num, $line,
+			$dev_opt_tab,
+			@row);
+
+    my ($latest_dir, $latest_file);
+
+    #
+    # "changes_only" is true: configuration is saved only when changed
+    # "changes_only" is false: configuration is always saved
+    #
+    my $dev_changes_only = $mod->dev_option($dev_opt_tab, "changes_only");
+
+    my $dev_run = $mod->dev_option($dev_opt_tab, "on_fetch_run");
+
+    #
+    # Do we need to locate the latest backup?
+    # - changes_only means we need to compare in order to detect change
+    # - on_fetch_run means we need to pass it to the external program
+    #
+    if ($dev_changes_only || $dev_run) {
+	($latest_dir, $latest_file) = $mod->find_latest($dev_id, $dev_opt_tab);
+    }
+
+    my $fetch_ts_start = time;
+    $logger->info("dev=$dev_id host=$dev_host: retrieving config at " . scalar(localtime($fetch_ts_start)));
+
+    my ($config_dir, $config_file) = $mod->fetch($file, $num, $line, $dev_id, $dev_host, $dev_opt_tab);
+
+    my $fetch_elap = time - $fetch_ts_start;
+    $logger->info("dev=$dev_id host=$dev_host: config retrieval took $fetch_elap secs");
+
+    return unless defined($config_dir);
+
+    my $cfg_equal = 0; # false
+
+    if (defined($latest_dir)) {
+	$cfg_equal = $mod->config_equal($latest_dir, $latest_file, $config_dir, $config_file);
+    }
+
+    if ($dev_run) {
+	if (defined($latest_dir)) {
+	    $ENV{FETCHCONFIG_PREV} = "$latest_dir/$latest_file" ;
+	}
+	else {
+	    delete $ENV{FETCHCONFIG_PREV};
+	}
+	$ENV{FETCHCONFIG_CURR} = "$config_dir/$config_file";
+	system($dev_run);
+	delete $ENV{FETCHCONFIG_PREV};
+	delete $ENV{FETCHCONFIG_CURR};
+    }
+
+    if ($dev_changes_only && $cfg_equal) {
+	$logger->debug("dev=$dev_id host=$dev_host: discarding config unchanged since last run");
+	$mod->config_discard($config_dir, $config_file);
+    }
+
+    $mod->purge_ancient($dev_id, $dev_opt_tab);
 }
 
 sub register {
@@ -158,6 +183,7 @@ sub init {
     $class->register(fetchconfig::model::Parks->new($log));
     $class->register(fetchconfig::model::Riverstone->new($log));
     $class->register(fetchconfig::model::Dell->new($log));
+    $class->register(fetchconfig::model::Terayon->new($log));
 }
 
 1;

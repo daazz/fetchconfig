@@ -10,7 +10,8 @@ INTRODUCTION
 	multiple devices. It has been tested under Linux and Windows,
 	and currently supports a variety of devices, including Cisco
 	IOS, Cisco Catalyst, FortiGate, ProCurve, Alcatel Ethernet
-	Routers (aka Riverstone), Dell PowerConnect Switches.
+	Routers (aka Riverstone), Dell PowerConnect Switches,
+	Terayon 3200/3500 CMTS.
 
 LICENSE
 =======
@@ -150,6 +151,8 @@ DEVICE SUPPORT
 
 	riverstone	Alcatel Ethernet Router 3100 (Riverstone RS3100)
 
+	terayon-os	Terayon 3200/3500 CMTS
+
 
 OPTIONS
 =======
@@ -186,6 +189,21 @@ OPTIONS
 			script might possibly retain multiple identical
 			configuration files.
 
+	on_fetch_run	Optional. Path to an external program to be
+			called whenever the configuration is fetched.
+			The following environmental variables are
+			passed to the program:
+			FETCHCONFIG_PREV = pathname to previous config,
+                                           undefined if none exists
+			FETCHCONFIG_CURR = pathname to current config
+			Example:
+			on_fetch_run=/usr/local/bin/mail_diff_to_admin.sh
+			Please notice that, if changes_only=1, the
+			backup file referenced to FETCHCONFIG_CURR
+			will be erased right after the external program
+			is finished. This option is available for all
+			modules.
+
 	Options specific to CiscoIOS:
 
 	show_cmd	Optional. If specified, its value will replace
@@ -207,6 +225,7 @@ OPTIONS
 	timeout		Mandatory.
 	fetch_timeout	Optional.
 	changes_only	Optional.
+	on_fetch_run	Optional.
 
 	The parks module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -218,6 +237,7 @@ OPTIONS
 	timeout		Mandatory.
 	fetch_timeout	Optional.
 	changes_only	Optional.
+	on_fetch_run	Optional.
 
 	Options specific to Parks:
 
@@ -238,4 +258,18 @@ OPTIONS
 	timeout		Mandatory.
 	fetch_timeout	Optional.
 	changes_only	Optional.
+	on_fetch_run	Optional.
+
+	The terayon-os module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	enable		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	timeout		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
 

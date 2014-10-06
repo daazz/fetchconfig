@@ -1,6 +1,13 @@
 #
-# $Id: CHANGES,v 1.24 2008/01/21 19:55:04 evertonm Exp $
+# $Id: CHANGES,v 1.29 2008/02/12 18:59:39 evertonm Exp $
 #
+
+0.12
+====
++ option on_fetch_run to call an external program whenever
+  a config backup is fetched.
++ append timezone offset to backup filename.
++ Sergey Alexanov added Terayon.pm for Old Terayon 3200/3500 CMTS.
 
 0.11
 ====
