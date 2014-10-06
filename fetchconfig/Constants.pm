@@ -16,14 +16,14 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Constants.pm,v 1.8 2008/02/15 14:51:34 evertonm Exp $
+# $Id: Constants.pm,v 1.9 2008/04/25 12:09:38 evertonm Exp $
 
 package fetchconfig::Constants; # fetchconfig/Constants.pm
 
 use strict;
 use warnings;
 
-my $version = '0.14';
+my $version = '0.15';
 
 sub version {
     $version;

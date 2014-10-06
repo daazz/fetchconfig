@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.9 2008/02/19 13:48:18 evertonm Exp $
+# $Id: Abstract.pm,v 1.10 2008/10/07 20:24:49 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
@@ -122,7 +122,7 @@ sub parse_options {
 
     foreach (@options) {
 	foreach (split /,/) {
-	    if (/^([^=]+)=([^=]*)$/) {
+	    if (/^([^=]+)=(.*)$/) {
 		my $opt = opt_trim($1);
 		my $val = opt_trim($2);
 		$opt_tab_ref->{$opt} = $val;
