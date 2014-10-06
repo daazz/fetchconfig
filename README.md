@@ -9,7 +9,8 @@ INTRODUCTION
 	fetchconfig is a Perl script for retrieving configuration of
 	multiple devices. It has been tested under Linux and Windows,
 	and currently supports a variety of devices, including Cisco
-	IOS, Cisco Catalyst, FortiGate and ProCurve.
+	IOS, Cisco Catalyst, FortiGate, ProCurve, Alcatel Ethernet
+	Routers (aka Riverstone), Dell PowerConnect Switches.
 
 LICENSE
 =======

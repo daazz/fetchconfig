@@ -1,4 +1,5 @@
 # fetchconfig - Retrieving configuration for multiple devices
+# Copyright (C) 2007 Julien Louis
 # Copyright (C) 2006 Everton da Silva Marques
 #
 # fetchconfig is free software; you can redistribute it and/or modify
@@ -16,23 +17,23 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: CiscoIOS.pm,v 1.6 2007/07/20 20:48:32 evertonm Exp $
+# $Id: Dell.pm,v 1.1 2007/07/31 12:12:31 evertonm Exp $
 
-package fetchconfig::model::CiscoIOS; # fetchconfig/model/CiscoIOS.pm
+package fetchconfig::model::Dell; # fetchconfig/model/Dell.pm
 
 use strict;
 use warnings;
 use Net::Telnet;
 use fetchconfig::model::Abstract;
 
-@fetchconfig::model::CiscoIOS::ISA = qw(fetchconfig::model::Abstract);
+@fetchconfig::model::Dell::ISA = qw(fetchconfig::model::Abstract);
 
 ####################################
 # Implement model::Abstract - Begin
 #
 
 sub label {
-    'cisco-ios';
+    'dell';
 }
 
 # "sub new" fully inherited from fetchconfig::model::Abstract
@@ -59,20 +60,15 @@ sub chat_login {
     my ($self, $t, $dev_id, $dev_host, $dev_opt_tab) = @_;
     my $ok;
 
-    my $login_prompt = '/(Username:|Password:) $/';
-
-    # chat_banner is used to allow temporary modification
-    # of timeout throught the 'banner_timeout' option
-
-    my ($prematch, $match) = $self->chat_banner($t, $dev_opt_tab, $login_prompt);
+    my ($prematch, $match) = $t->waitfor(Match => '/(User Name:|Password:) ?$/');
     if (!defined($prematch)) {
-	$self->log_error("could not find login prompt: $login_prompt");
+	$self->log_error("could not find login prompt");
 	return undef;
     }
 
     $self->log_debug("found login prompt: [$match]");
 
-    if ($match =~ /^Username/) {
+    if ($match =~ /^User Name/) {
 	my $dev_user = $self->dev_option($dev_opt_tab, "user");
 	if (!defined($dev_user)) {
 	    $self->log_error("login username needed but not provided");
@@ -85,7 +81,7 @@ sub chat_login {
 	    return undef;
 	}
 
-	($prematch, $match) = $t->waitfor(Match => '/Password: $/');
+	($prematch, $match) = $t->waitfor(Match => '/Password: ?$/');
 	if (!defined($prematch)) {
 	    $self->log_error("could not find password prompt");
 	    return undef;
@@ -100,14 +96,13 @@ sub chat_login {
 	    $self->log_error("login password needed but not provided");
 	    return undef;
         }
-
-	$ok = $t->print($dev_pass);
+	$ok = $t->print("$dev_pass");
 	if (!$ok) {
 	    $self->log_error("could not send login password");
 	    return undef;
 	}
 
-        ($prematch, $match) = $t->waitfor(Match => '/(\S+)[>#]$/');
+        ($prematch, $match) = $t->waitfor(Match => '/(\S+)[>#] ?$/');
 	if (!defined($prematch)) {
 	    $self->log_error("could not find command prompt");
 	    return undef;
@@ -116,43 +111,7 @@ sub chat_login {
 	$self->log_debug("found command prompt: [$match]");
     }
 
-    if ($match =~ /^\S+>$/) {
-        $ok = $t->print('enable');
-	if (!$ok) {
-	    $self->log_error("could not send enable command");
-	    return undef;
-	}
-	
-        ($prematch, $match) = $t->waitfor(Match => '/(Password: |\S+#)$/');
-	if (!defined($prematch)) {
-	    $self->log_error("could not find enable password prompt");
-	    return undef;
-	}
-
-        if ($match =~ /^Password/) {
-	    my $dev_enable = $self->dev_option($dev_opt_tab, "enable");
-	    if (!defined($dev_enable)) {
-		$self->log_error("enable password needed but not provided");
-		return undef;
-	    }
-
-	    $ok = $t->print($dev_enable);
-	    if (!$ok) {
-		$self->log_error("could not send enable password");
-		return undef;
-	    }
-
-	    ($prematch, $match) = $t->waitfor(Match => '/\S+#$/');
-	    if (!defined($prematch)) {
-		$self->log_error("could not find enable command prompt");
-		return undef;
-	    }
-        }
-
-	$self->log_debug("found enable prompt: [$match]");
-    }
-
-    if ($match !~ /^(\S+)\#$/) {
+    if ($match !~ /^(\S+)\# ?$/) {
 	$self->log_error("could not match enable command prompt");
 	return undef;
     }
@@ -174,7 +133,7 @@ sub expect_enable_prompt {
 	return undef;
     }
 
-    my $enable_prompt_regexp = '/' . $prompt . '#$/';
+    my $enable_prompt_regexp = '/' . $prompt . '# ?$/';
 
     my ($prematch, $match) = $t->waitfor(Match => $enable_prompt_regexp);
     if (!defined($prematch)) {
@@ -188,7 +147,7 @@ sub chat_fetch {
     my ($self, $t, $dev_id, $dev_host, $prompt, $fetch_timeout, $show_cmd, $conf_ref) = @_;
     my $ok;
     
-    $ok = $t->print('term len 0');
+    $ok = $t->print('term datadump');
     if (!$ok) {
 	$self->log_error("could not send pager disabling command");
 	return 1;
@@ -224,7 +183,7 @@ sub chat_fetch {
 			$top_info.=$line;
 			last;
 		} else {
-			$top_info.='!!' . $line;
+			$top_info .= $line;
 		}
 		# Normally, finding the "Current configuration" line
 		# will be enough to exit this loop.
@@ -312,3 +271,4 @@ sub do_fetch {
 }
 
 1;
+

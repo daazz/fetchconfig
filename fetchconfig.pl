@@ -18,7 +18,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: fetchconfig.pl,v 1.6 2007/07/17 13:11:42 evertonm Exp $
+# $Id: fetchconfig.pl,v 1.7 2007/07/20 17:05:39 evertonm Exp $
 
 use strict;
 use fetchconfig::Logger;
@@ -44,7 +44,7 @@ my $me = basename($0);
 
 my $log = fetchconfig::Logger->new({ prefix => $me });
 
-$log->info(fetchconfig::Constants::version);
+$log->info('version ' . fetchconfig::Constants::version);
 
 my @device_file_list;
 

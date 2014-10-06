@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.3 2007/07/12 23:40:58 evertonm Exp $
+# $Id: Abstract.pm,v 1.4 2007/07/20 20:48:32 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
@@ -49,6 +49,9 @@ sub fetch {
     die "model::Abstract->fetch: SPECIALIZE ME";
 }
 
+# chat_banner is used to allow temporary modification
+# of timeout throught the 'banner_timeout' option
+#
 sub chat_banner {
     my ($self, $t, $dev_opt_tab, $login_pattern) = @_;
 

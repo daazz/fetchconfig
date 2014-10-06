@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.9 2007/07/17 15:05:50 evertonm Exp $
+# $Id: Detector.pm,v 1.11 2007/07/31 12:16:58 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -28,6 +28,7 @@ use fetchconfig::model::FortiGate;
 use fetchconfig::model::ProCurve;
 use fetchconfig::model::Parks;
 use fetchconfig::model::Riverstone;
+use fetchconfig::model::Dell;
 
 my $logger;
 my %model_table;
@@ -137,6 +138,7 @@ sub init {
     $class->register(fetchconfig::model::ProCurve->new($log));
     $class->register(fetchconfig::model::Parks->new($log));
     $class->register(fetchconfig::model::Riverstone->new($log));
+    $class->register(fetchconfig::model::Dell->new($log));
 }
 
 1;
