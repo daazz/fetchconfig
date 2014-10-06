@@ -1,5 +1,5 @@
 #
-# $Id: README,v 1.15 2008/02/13 11:27:55 evertonm Exp $
+# $Id: README,v 1.16 2008/02/14 20:37:43 evertonm Exp $
 #
 
 INTRODUCTION
@@ -184,6 +184,8 @@ OPTIONS
 			called whenever the configuration is fetched.
 			The following environmental variables are
 			passed to the program:
+			FETCHCONFIG_DEV_ID = device unique id
+			FETCHCONFIG_DEV_HOST = device hostname (or IP addr)
 			FETCHCONFIG_PREV = pathname to previous config,
                                            undefined if none exists
 			FETCHCONFIG_CURR = pathname to current config

@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.6 2008/02/12 12:25:24 evertonm Exp $
+# $Id: Abstract.pm,v 1.7 2008/02/14 19:15:55 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
@@ -164,10 +164,18 @@ sub dev_option {
 
 sub get_timestr {
     my $ts = time;
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($ts);
+    my @local_ts_list = localtime($ts);
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = @local_ts_list;
     $year += 1900;
     ++$mon;
-    my $tz_off = strftime '%z', localtime($ts);
+    my $tz_off = strftime '%z', @local_ts_list; 
+    
+    # Solaris strftime does not support %z for tz offset (as in -0200),
+    # so we resort to %Z for tz name (as in -BRST)
+    if ($tz_off =~ /z/) {
+        $tz_off = strftime '-%Z', @local_ts_list;
+    }
+    
     ($year, $mon, $mday, $hour, $min, $sec, $tz_off);
 }
 

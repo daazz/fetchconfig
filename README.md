@@ -193,6 +193,8 @@ OPTIONS
 			called whenever the configuration is fetched.
 			The following environmental variables are
 			passed to the program:
+			FETCHCONFIG_DEV_ID = device unique id
+			FETCHCONFIG_DEV_HOST = device hostname (or IP addr)
 			FETCHCONFIG_PREV = pathname to previous config,
                                            undefined if none exists
 			FETCHCONFIG_CURR = pathname to current config

@@ -1,6 +1,13 @@
 #
-# $Id: CHANGES,v 1.29 2008/02/12 18:59:39 evertonm Exp $
+# $Id: CHANGES,v 1.32 2008/02/14 20:37:43 evertonm Exp $
 #
+
+0.13
+====
++ resort to strftime -%Z for tz name in systems which
+  lack support for strftime %z for tz offset (Solaris 7).
++ added FETCHCONFIG_DEV_ID and FETCHCONFIG_DEV_HOST
+  environmental variables to external on_fetch_run program.
 
 0.12
 ====
