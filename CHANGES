@@ -1,0 +1,14 @@
+#
+# $Id$
+#
+
+0.2
+===
++ new filesystem layout.
++ FSF address updated.
+
+0.1
+===
++ notes about the device id.
++ copyright notice at beginning of source files.
++ added this CHANGES file.

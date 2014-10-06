@@ -1,10 +1,8 @@
-fetchconfig
-===========
-
-original project from: http://download.savannah.gnu.org/releases/fetchconfig/
+#
+# $Id$
+#
 
 INTRODUCTION
-============
 
 	fetchconfig is a Perl script for retrieving configuration of
         multiple devices.
@@ -12,7 +10,6 @@ INTRODUCTION
 	fetchconfig currently supports Cisco IOS devices.
 
 LICENSE
-=======
 
         fetchconfig - Retrieving configuration for multiple devices
         Copyright (C) 2006 Everton da Silva Marques
@@ -33,7 +30,6 @@ LICENSE
 	Fifth Floor, Boston, MA 02110-1301 USA.
 
 INSTALLATION
-============
 
 	1. fetchconfig.pl expects a Perl interpreter at /usr/bin/perl.
 
@@ -51,7 +47,6 @@ INSTALLATION
 	[ fetchconfig is now available under /usr/local/fetchconfig ]
 
 USAGE
-=====
 
 	1. Edit the file "device_table.example" according your needs,
         and save it as "device_table". Example:
@@ -74,7 +69,6 @@ USAGE
 	configuration files under the "repository".
 
 DEVICE TABLE
-============
 
 	The device table assigned with '-device=' switch is a text
         file which supports two types of lines:
@@ -100,7 +94,6 @@ DEVICE TABLE
 	b) a valid filesystem's directory name.
 
 OPTIONS
-=======
 
 	The CiscoIOS module recognizes the following options:
 
@@ -128,3 +121,4 @@ OPTIONS
 			script might possibly retain multiple identical
 			configuration files.
 
+				 -- END --

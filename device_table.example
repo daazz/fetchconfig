@@ -1,0 +1,20 @@
+#
+# $Id$
+#
+
+#
+# DEFAULT OPTIONS SECTION
+#
+#		model		options
+#
+default:	cisco-ios	user=backup,pass=fran,enable=jose
+default:	cisco-ios	timeout=10,keep=5,changes_only=0
+default:	cisco-ios	repository=/var/fetchconfig/save
+
+#
+# DEVICE SECTION
+#
+# model		dev-unique-id	hostname	device-specific-options
+#
+cisco-ios	inet-gw		10.0.0.1
+cisco-ios	vpn-gw		192.168.0.1	keep=10,changes_only=1
