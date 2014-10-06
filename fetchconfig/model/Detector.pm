@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Detector.pm,v 1.24 2011/05/13 19:43:41 evertonm Exp $
+# $Id: Detector.pm,v 1.25 2011/06/16 18:16:41 evertonm Exp $
 
 package fetchconfig::model::Detector; # fetchconfig/model/Detector.pm
 
@@ -35,6 +35,7 @@ use fetchconfig::model::DmSwitch;
 use fetchconfig::model::3ComMSR;
 use fetchconfig::model::MikroTik;
 use fetchconfig::model::CiscoPIX;
+use fetchconfig::model::TellabsMSR;
 
 my $logger;
 my %model_table;
@@ -198,6 +199,7 @@ sub init {
     $class->register(fetchconfig::model::3ComMSR->new($log));
     $class->register(fetchconfig::model::MikroTik->new($log));
     $class->register(fetchconfig::model::CiscoPIX->new($log));
+    $class->register(fetchconfig::model::TellabsMSR->new($log));
 }
 
 1;

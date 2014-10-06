@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.10 2008/10/07 20:24:49 evertonm Exp $
+# $Id: Abstract.pm,v 1.11 2011/06/20 19:27:38 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
@@ -216,6 +216,11 @@ sub dump_config {
 
     my $file = sprintf("${dev_id}.run.%04d%02d%02d.%02d%02d%02d$tz_off",
 		       $year, $mon, $day, $hour, $min, $sec);
+
+    my $dev_suffix = $self->dev_option($dev_opt_tab, "filename_append_suffix");
+    if (defined($dev_suffix)) {
+	$file .= $dev_suffix;
+    }
 
     my $file_path = "$dir_path/$file";
 

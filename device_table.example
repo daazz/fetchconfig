@@ -1,5 +1,5 @@
 #
-# $Id: device_table.example,v 1.14 2011/06/09 14:52:01 evertonm Exp $
+# $Id: device_table.example,v 1.17 2011/06/20 20:41:37 evertonm Exp $
 #
 
 # DEFAULT OPTIONS SECTION
@@ -47,6 +47,12 @@ default:        mikrotik        repository=/var/fetchconfig/save
 default:	cisco-pix	timeout=10,keep=5,changes_only=1
 default:	cisco-pix	repository=/var/fetchconfig/save
 
+default:        tellabs-msr     user=usr,pass=pwd,enable=jose
+default:        tellabs-msr     timeout=10,keep=5,changes_only=0
+default:        tellabs-msr     fetch_timeout=1200
+default:        tellabs-msr     repository=/var/fetchconfig/save
+default:	tellabs-msr	filename_append_suffix=.txt
+
 # DEVICES SECTION
 #
 # model		dev-unique-id	hostname	device-specific-options
@@ -74,3 +80,5 @@ cisco-asa	fw1-1		10.1.1.1	user=fwadmin,pass=fwpass,enable=fwpass
 mikrotik        lab-rb800       10.0.0.147
 
 cisco-pix	lab-pix		10.0.0.1	user=pixadmin,pass=pixpass,enable=pixenable
+
+tellabs-msr     8800-lab        1.1.1.1

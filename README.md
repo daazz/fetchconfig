@@ -13,7 +13,7 @@ INTRODUCTION
 	Firewalls, ProCurve, Alcatel Ethernet Routers (aka
 	Riverstone), Dell PowerConnect Switches, Terayon 3200/3500
 	CMTS, Datacom DmSwitch Switches, HP MSR Routers, Mikrotik
-	Routers.
+	Routers, Tellabs MSR Routers.
 
 LICENSE
 =======
@@ -150,7 +150,7 @@ DEVICE SUPPORT
 
 	cisco-asa	Cisco ASA firewalls
 
-	cisco-pix	Cisco FIX firewalls
+	cisco-pix	Cisco PIX firewalls
 
 	fortigate	FortiOS 3.0
 
@@ -165,6 +165,8 @@ DEVICE SUPPORT
 	3com-msr	3Com MSR routers
 
 	mikrotik	MikroTik routers
+
+	tellabs-msr	Tellabs MSR routers
 
 
 OPTIONS
@@ -222,6 +224,12 @@ OPTIONS
 	timezone	Optional. If defined as timezone=hide, it will
 			supress timezone information from config filename.
 
+	filename_append_suffix
+			Optional. If defined, it is appended to the
+			generated filename. This option is available
+			for all modules.
+			Example: filename_append_suffix=.txt
+
 	Options specific to CiscoIOS:
 
 	show_cmd	Optional. If specified, its value will replace
@@ -245,6 +253,7 @@ OPTIONS
 	changes_only	Optional.
 	on_fetch_run	Optional.
 	timezone	Optional.
+	filename_append_suffix Optional.
 
 	The parks module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -258,6 +267,7 @@ OPTIONS
 	changes_only	Optional.
 	on_fetch_run	Optional.
 	timezone	Optional.
+	filename_append_suffix Optional.
 
 	Options specific to Parks:
 
@@ -280,6 +290,7 @@ OPTIONS
 	changes_only	Optional.
 	on_fetch_run	Optional.
 	timezone	Optional.
+	filename_append_suffix Optional.
 
 	The terayon-os module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -294,6 +305,7 @@ OPTIONS
 	changes_only	Optional.
 	on_fetch_run	Optional.
 	timezone	Optional.
+	filename_append_suffix Optional.
 
 	The dmswitch module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -307,6 +319,7 @@ OPTIONS
 	changes_only	Optional.
 	on_fetch_run	Optional.
 	timezone	Optional.
+	filename_append_suffix Optional.
 
 	The 3com-msr module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -321,6 +334,7 @@ OPTIONS
 	changes_only	Optional.
 	on_fetch_run	Optional.
 	timezone	Optional.
+	filename_append_suffix Optional.
 
 	The mikrotik module recognizes the following options:
 	(See above cisco-ios/cisco-cat section for descriptions.)
@@ -335,4 +349,20 @@ OPTIONS
 	changes_only	Optional.
 	on_fetch_run	Optional.
 	timezone	Optional.
+	filename_append_suffix Optional.
+
+	The tellabs module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	enable		Mandatory.
+	timeout		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
+	timezone	Optional.
+	filename_append_suffix Optional.
 
