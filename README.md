@@ -138,6 +138,7 @@ DEVICE SUPPORT
 	are likely to work but have not been verified.
 
 	Model Name	Devices/OS Supported
+	----------	------------------------------------------------
 
 	cisco-cat	CatOS switches
 
@@ -156,6 +157,8 @@ DEVICE SUPPORT
 	terayon-os	Terayon 3200/3500 CMTS
 
 	dmswitch	Datacom DmSwitch
+
+	3com-msr	3Com MSR routers
 
 
 OPTIONS
@@ -294,6 +297,20 @@ OPTIONS
 	repository	Mandatory.
 	keep		Mandatory.
 	timeout		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+	on_fetch_run	Optional.
+	timezone	Optional.
+
+	The 3com-msr module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	enable		Mandatory.
+	timeout		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
 	fetch_timeout	Optional.
 	changes_only	Optional.
 	on_fetch_run	Optional.

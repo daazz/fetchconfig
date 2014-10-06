@@ -1,6 +1,10 @@
 #
-# $Id: CHANGES,v 1.41 2009/02/03 11:07:55 evertonm Exp $
+# $Id: CHANGES,v 1.43 2010/10/07 16:10:25 evertonm Exp $
 #
+
+0.18
+====
++ support for 3Com MSR devices.
 
 0.17
 ====
