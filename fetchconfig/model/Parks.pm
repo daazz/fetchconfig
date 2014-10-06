@@ -1,5 +1,5 @@
 # fetchconfig - Retrieving configuration for multiple devices
-# Copyright (C) 2006 Everton da Silva Marques
+# Copyright (C) 2007 Everton da Silva Marques
 #
 # fetchconfig is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,23 +16,23 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: CiscoIOS.pm,v 1.5 2007/07/13 13:41:50 evertonm Exp $
+# $Id: Parks.pm,v 1.4 2007/07/13 13:41:50 evertonm Exp $
 
-package fetchconfig::model::CiscoIOS; # fetchconfig/model/CiscoIOS.pm
+package fetchconfig::model::Parks; # fetchconfig/model/Parks.pm
 
 use strict;
 use warnings;
 use Net::Telnet;
 use fetchconfig::model::Abstract;
 
-@fetchconfig::model::CiscoIOS::ISA = qw(fetchconfig::model::Abstract);
+@fetchconfig::model::Parks::ISA = qw(fetchconfig::model::Abstract);
 
 ####################################
 # Implement model::Abstract - Begin
 #
 
 sub label {
-    'cisco-ios';
+    'parks';
 }
 
 # "sub new" fully inherited from fetchconfig::model::Abstract
@@ -59,7 +59,7 @@ sub chat_login {
     my ($self, $t, $dev_id, $dev_host, $dev_opt_tab) = @_;
     my $ok;
 
-    my ($prematch, $match) = $t->waitfor(Match => '/(Username:|Password:) $/');
+    my ($prematch, $match) = $self->chat_banner($t, $dev_opt_tab, '/login: $/');
     if (!defined($prematch)) {
 	$self->log_error("could not find login prompt");
 	return undef;
@@ -67,7 +67,7 @@ sub chat_login {
 
     $self->log_debug("found login prompt: [$match]");
 
-    if ($match =~ /^Username/) {
+    if ($match =~ /^login:/) {
 	my $dev_user = $self->dev_option($dev_opt_tab, "user");
 	if (!defined($dev_user)) {
 	    $self->log_error("login username needed but not provided");
@@ -102,7 +102,7 @@ sub chat_login {
 	    return undef;
 	}
 
-        ($prematch, $match) = $t->waitfor(Match => '/(\S+)[>#]$/');
+        ($prematch, $match) = $t->waitfor(Match => '/(\S+)# $/');
 	if (!defined($prematch)) {
 	    $self->log_error("could not find command prompt");
 	    return undef;
@@ -111,45 +111,9 @@ sub chat_login {
 	$self->log_debug("found command prompt: [$match]");
     }
 
-    if ($match =~ /^\S+>$/) {
-        $ok = $t->print('enable');
-	if (!$ok) {
-	    $self->log_error("could not send enable command");
-	    return undef;
-	}
-	
-        ($prematch, $match) = $t->waitfor(Match => '/(Password: |\S+#)$/');
-	if (!defined($prematch)) {
-	    $self->log_error("could not find enable password prompt");
-	    return undef;
-	}
-
-        if ($match =~ /^Password/) {
-	    my $dev_enable = $self->dev_option($dev_opt_tab, "enable");
-	    if (!defined($dev_enable)) {
-		$self->log_error("enable password needed but not provided");
-		return undef;
-	    }
-
-	    $ok = $t->print($dev_enable);
-	    if (!$ok) {
-		$self->log_error("could not send enable password");
-		return undef;
-	    }
-
-	    ($prematch, $match) = $t->waitfor(Match => '/\S+#$/');
-	    if (!defined($prematch)) {
-		$self->log_error("could not find enable command prompt");
-		return undef;
-	    }
-        }
-
-	$self->log_debug("found enable prompt: [$match]");
-    }
-
-    if ($match !~ /^(\S+)\#$/) {
-	$self->log_error("could not match enable command prompt");
-	return undef;
+    if ($match !~ /^(\S+)# $/) {
+        $self->log_error("could not match enable command prompt");
+        return undef;
     }
 
     my $prompt = $1;
@@ -162,42 +126,28 @@ sub chat_login {
 }
 
 sub expect_enable_prompt {
-    my ($self, $t, $prompt) = @_;
+    my ($self, $t, $prompt, $label) = @_;
 
     if (!defined($prompt)) {
 	$self->log_error("internal failure: undefined command prompt");
 	return undef;
     }
 
-    my $enable_prompt_regexp = '/' . $prompt . '#$/';
+    my $enable_prompt_regexp = '/' . $prompt . '# $/';
 
     my ($prematch, $match) = $t->waitfor(Match => $enable_prompt_regexp);
     if (!defined($prematch)) {
-	$self->log_error("could not match enable command prompt: $enable_prompt_regexp");
+	$self->log_error("$label: could not match enable command prompt: $enable_prompt_regexp");
     }
 
     ($prematch, $match);
 }
 
 sub chat_fetch {
-    my ($self, $t, $dev_id, $dev_host, $prompt, $fetch_timeout, $show_cmd, $conf_ref) = @_;
+    my ($self, $t, $dev_id, $dev_host, $prompt, $fetch_timeout, $conf_ref) = @_;
     my $ok;
     
-    $ok = $t->print('term len 0');
-    if (!$ok) {
-	$self->log_error("could not send pager disabling command");
-	return 1;
-    }
-
-    my ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
-    return unless defined($prematch);
-
-    my $full_show_cmd="show run";
-    if(defined($show_cmd)) {
-      if($show_cmd eq "wrterm") {
-        $full_show_cmd="write term";
-      }
-    }
+    my $full_show_cmd="show running-config";
 
     $ok = $t->print($full_show_cmd);
     if (!$ok) {
@@ -205,34 +155,14 @@ sub chat_fetch {
 	return 1;
     }
 
-	# Prevent "show run" command from appearing in config dump
-	$t->getline();
-
-	# Commment out garbage at top so config file can be restored
-	# cleanly at a later date
-	my($line,$top_info);
-	while($line=$t->getline()) {
-		# Failsafe: Just in case 'Current configuration'
-		# doesn't appear, assume config begins with 'version'
-		# or first valid comment.
-		if($line=~/^version / || $line=~/^\!/) {
-			$top_info.=$line;
-			last;
-		} else {
-			$top_info.='!!' . $line;
-		}
-		# Normally, finding the "Current configuration" line
-		# will be enough to exit this loop.
-		last if $line=~/^Current configuration/;
-	}
-
     my $save_timeout;
     if (defined($fetch_timeout)) {
         $save_timeout = $t->timeout;
         $t->timeout($fetch_timeout);
     }
 
-    ($prematch, $match) = $self->expect_enable_prompt($t, $prompt);
+    my ($prematch, $match);
+    ($prematch, $match) = $self->expect_enable_prompt($t, $prompt, 'fetching-config');
     if (!defined($prematch)) {
 	$self->log_error("could not find end of configuration");
 	return 1;
@@ -244,7 +174,7 @@ sub chat_fetch {
 
     $self->log_debug("found end of configuration: [$match]");
 
-    @$conf_ref = split /\n/, $top_info . $prematch;
+    @$conf_ref = split /\n/, $prematch;
 
     $self->log_debug("fetched: " . scalar @$conf_ref . " lines");
 
@@ -292,9 +222,7 @@ sub do_fetch {
 
     my $fetch_timeout = $self->dev_option($dev_opt_tab, "fetch_timeout");
 
-    my $show_cmd = $self->dev_option($dev_opt_tab, "show_cmd");
-
-    return if $self->chat_fetch($t, $dev_id, $dev_host, $prompt, $fetch_timeout, $show_cmd, \@config);
+    return if $self->chat_fetch($t, $dev_id, $dev_host, $prompt, $fetch_timeout, \@config);
 
     $ok = $t->close;
     if (!$ok) {
@@ -307,3 +235,4 @@ sub do_fetch {
 }
 
 1;
+

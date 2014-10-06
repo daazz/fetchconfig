@@ -18,7 +18,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: fetchconfig.pl,v 1.2 2006/06/22 14:48:13 evertonm Exp $
+# $Id: fetchconfig.pl,v 1.4 2007/07/13 13:42:49 evertonm Exp $
 
 use strict;
 use fetchconfig::Logger;
@@ -43,14 +43,19 @@ my $me = basename($0);
 
 my $log = fetchconfig::Logger->new({ prefix => $me });
 
+$log->info('version 0.6');
+
 my @device_file_list;
 
-foreach (@ARGV) {
-    if (/^-devices=(.+)$/) {
+foreach my $opt (@ARGV) {
+    if ($opt eq '-v') {
+	exit; # only show version
+    }
+    if ($opt =~ /^-devices=(.+)$/) {
 	push @device_file_list, $1;
 	next;
     }
-    $log->error("unexpected argument: $_");
+    $log->error("unexpected argument: $opt");
     &usage;
     die;
 }
@@ -63,8 +68,8 @@ if (@device_file_list < 1) {
 
 fetchconfig::model::Detector->init($log);
 
-foreach (@device_file_list) {
-    &load_device_list($_);
+foreach my $dev_file (@device_file_list) {
+    &load_device_list($dev_file);
 }
 
 $log->info("done");
@@ -72,7 +77,7 @@ $log->info("done");
 exit;
 
 sub usage {
-    warn "usage: $me -devices=file\n";
+    warn "usage: $me [-v] -devices=file\n";
 }
 
 sub load_device_list {

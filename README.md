@@ -34,6 +34,7 @@ LICENSE
 
 INSTALLATION (UNIX/Linux)
 =========================
+
 	1. fetchconfig.pl expects a Perl interpreter at /usr/bin/perl.
 
 	2. fetchconfig.pl requires the Net::Telnet module.
@@ -144,6 +145,8 @@ DEVICE SUPPORT
 
 	fortigate	FortiOS 3.0
 
+	parks		Parks 209R
+
 
 OPTIONS
 =======
@@ -192,16 +195,29 @@ OPTIONS
 	(See above cisco-ios/cisco-cat section for descriptions.)
 
 	user		Mandatory.
-
 	pass		Mandatory.
-
 	repository	Mandatory.
-
 	keep		Mandatory.
-
 	timeout		Mandatory.
-
 	fetch_timeout	Optional.
-
 	changes_only	Optional.
+
+	The parks module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	timeout		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+
+	Options specific to Parks:
+
+	banner_timeout	Optional. If given, will override the timeout
+                        value used to wait for the 'login:' prompt.
+                        It is useful since the Parks 209R spends
+ 			many seconds before issuing the initial
+			login prompt for TELNET connections.
 

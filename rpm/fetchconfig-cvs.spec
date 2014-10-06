@@ -1,11 +1,12 @@
 Summary: fetchconfig device configuration retrieval software
 Name: fetchconfig
-Version: 0.5
+Version: 0.6
 Release: 1.rhfc5
 Group: Applications/System
 Url: http://savannah.nongnu.org/projects/fetchconfig
 #Url: http://www.nongnu.org/fetchconfig
 Source0: http://download.savannah.nongnu.org/releases/fetchconfig/fetchconfig-%{version}.tar.gz
+BuildArch: noarch
 BuildRoot: /var/tmp/%{name}-root
 License: GPL
 

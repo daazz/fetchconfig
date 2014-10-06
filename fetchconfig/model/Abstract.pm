@@ -16,7 +16,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301 USA.
 #
-# $Id: Abstract.pm,v 1.2 2006/06/22 14:48:13 evertonm Exp $
+# $Id: Abstract.pm,v 1.3 2007/07/12 23:40:58 evertonm Exp $
 
 package fetchconfig::model::Abstract; # fetchconfig/model/Abstract.pm
 
@@ -47,6 +47,28 @@ sub fetch {
     my ($self, $file, $line_num, $line, $dev_id, $dev_host, $dev_opt_tab) = @_;
 
     die "model::Abstract->fetch: SPECIALIZE ME";
+}
+
+sub chat_banner {
+    my ($self, $t, $dev_opt_tab, $login_pattern) = @_;
+
+    my $save_timeout;
+    my $banner_timeout = $self->dev_option($dev_opt_tab, "banner_timeout");
+
+    if (defined($banner_timeout)) {
+        $save_timeout = $t->timeout;
+        $self->log_debug("temporarily forcing banner_timeout=$banner_timeout (from timeout=$save_timeout)");
+        $t->timeout($banner_timeout);
+    }
+
+    my ($prematch, $match) = $t->waitfor(Match => $login_pattern);
+
+    if (defined($banner_timeout)) {
+        $self->log_debug("restoring timeout=$save_timeout");
+        $t->timeout($save_timeout);
+    }
+
+    ($prematch, $match);
 }
 
 #

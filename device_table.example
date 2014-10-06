@@ -1,8 +1,7 @@
 #
-# $Id: device_table.example,v 1.5 2006/12/10 01:23:12 djschaap Exp $
+# $Id: device_table.example,v 1.6 2007/07/12 23:40:58 evertonm Exp $
 #
 
-#
 # DEFAULT OPTIONS SECTION
 #
 #		model		options
@@ -16,7 +15,11 @@ default:	cisco-cat	timeout=10,keep=5
 default:	cisco-cat	changes_only=0,fetch_timeout=30
 default:	cisco-cat	repository=/var/fetchconfig/save
 
-#
+default:        parks           user=admin,pass=parks
+default:        parks           timeout=2,keep=5
+default:        parks           fetch_timeout=10,banner_timeout=60
+default:        parks           repository=/var/fetchconfig/save
+
 # DEVICES SECTION
 #
 # model		dev-unique-id	hostname	device-specific-options
@@ -27,3 +30,5 @@ cisco-ios	ancient-ios	192.168.0.3	show_cmd=wrterm
 
 cisco-cat	sales-sw	172.16.0.10
 cisco-cat	eng-sw		172.16.0.11	keep=10,changes_only=1
+
+parks           lab209r		10.30.0.6

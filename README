@@ -1,5 +1,5 @@
 #
-# $Id: README,v 1.6 2007/01/29 19:36:36 evertonm Exp $
+# $Id: README,v 1.7 2007/07/13 13:09:45 evertonm Exp $
 #
 
 INTRODUCTION
@@ -137,6 +137,8 @@ DEVICE SUPPORT
 
 	fortigate	FortiOS 3.0
 
+	parks		Parks 209R
+
 
 OPTIONS
 
@@ -184,17 +186,30 @@ OPTIONS
 	(See above cisco-ios/cisco-cat section for descriptions.)
 
 	user		Mandatory.
-
 	pass		Mandatory.
-
 	repository	Mandatory.
-
 	keep		Mandatory.
-
 	timeout		Mandatory.
-
 	fetch_timeout	Optional.
-
 	changes_only	Optional.
+
+	The parks module recognizes the following options:
+	(See above cisco-ios/cisco-cat section for descriptions.)
+
+	user		Mandatory.
+	pass		Mandatory.
+	repository	Mandatory.
+	keep		Mandatory.
+	timeout		Mandatory.
+	fetch_timeout	Optional.
+	changes_only	Optional.
+
+	Options specific to Parks:
+
+	banner_timeout	Optional. If given, will override the timeout
+                        value used to wait for the 'login:' prompt.
+                        It is useful since the Parks 209R spends
+ 			many seconds before issuing the initial
+			login prompt for TELNET connections.
 
 				 -- END --
